@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class UserInfo {
     private Long userId;
-    private com.example.food_mart.modules.user.domain.Role role;
+    private Role role;
 
     protected UserInfo(Long userId, Role role) {
         this.userId = userId;

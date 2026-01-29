@@ -1,9 +1,9 @@
 package com.example.food_mart.modules.shop.presentataion;
 
-import com.ex.mini.common.ApiResponse;
-import com.ex.mini.common.argumentResolver.UserInfo;
-import com.ex.mini.shop.application.ItemService;
-import com.ex.mini.shop.presentation.dto.request.ItemCreateDTO;
+import com.example.food_mart.common.ApiResponse;
+import com.example.food_mart.common.argumentResolver.UserInfo;
+import com.example.food_mart.modules.shop.application.ItemService;
+import com.example.food_mart.modules.shop.presentataion.dto.request.ItemCreateDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

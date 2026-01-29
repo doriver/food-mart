@@ -1,3 +1,19 @@
 spring:
   application:
     name: food-mart
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mini?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: spring.mini
+    password: qlqjs
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: 'false'
+        use_sql_comments: 'false'
+        auto_quote_keyword: 'true'
+        show_sql: 'false'
+        default_batch_fetch_size: 10
+    database-platform: org.hibernate.dialect.MySQLDialect

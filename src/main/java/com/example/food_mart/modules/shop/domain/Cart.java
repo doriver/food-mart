@@ -1,6 +1,6 @@
 package com.example.food_mart.modules.shop.domain;
 
-import com.ex.mini.shop.domain.entity.ItemInCart;
+import com.example.food_mart.modules.shop.domain.entity.ItemInCart;
 import lombok.Getter;
 
 import java.util.HashMap;

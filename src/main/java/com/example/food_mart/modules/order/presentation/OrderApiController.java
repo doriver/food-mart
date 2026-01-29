@@ -1,12 +1,12 @@
 package com.example.food_mart.modules.order.presentation;
 
-import com.ex.mini.common.ApiResponse;
-import com.ex.mini.common.argumentResolver.UserInfo;
-import com.ex.mini.shop.application.OrderReadService;
-import com.ex.mini.shop.application.OrderService;
-import com.ex.mini.shop.presentation.dto.request.OrderCreateDTO;
-import com.ex.mini.shop.presentation.dto.response.OrderDetailDTO;
-import com.ex.mini.shop.presentation.dto.response.OrderReadDTO;
+import com.example.food_mart.common.ApiResponse;
+import com.example.food_mart.common.argumentResolver.UserInfo;
+import com.example.food_mart.modules.order.application.OrderReadService;
+import com.example.food_mart.modules.order.application.OrderService;
+import com.example.food_mart.modules.order.presentation.dto.request.OrderCreateDTO;
+import com.example.food_mart.modules.order.presentation.dto.response.OrderDetailDTO;
+import com.example.food_mart.modules.order.presentation.dto.response.OrderReadDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
