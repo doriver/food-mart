@@ -2,6 +2,7 @@ package com.example.food_mart.modules.shop.domain.entity;
 
 import com.example.food_mart.common.exception.Expected4xxException;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,10 @@ public class Item {
 
     private int price;
 
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private ItemStorage itemStorage;
+
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> attribute;
 
@@ -40,9 +45,10 @@ public class Item {
     )
     private LocalDateTime updatedAt;
 
-    public Item(String name, int price, Map<String, Object> attribute, Long categoryId) {
+    public Item(String name, int price, ItemStorage itemStorage, Map<String, Object> attribute, Long categoryId) {
         this.name = name;
         this.price = price;
+        this.itemStorage = itemStorage;
         this.attribute = attribute;
         this.categoryId = categoryId;
     }

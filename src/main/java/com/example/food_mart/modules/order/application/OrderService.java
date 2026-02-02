@@ -46,7 +46,7 @@ public class OrderService {
 
     /*
         주문자의 장바구니에 있는 상품들 구매할수 있는지 판단
-        1. 돈    2. 상품 개수
+        1. 돈    2. Stock 개수
      */
     public void judgeBuyable(Long userId, Cart cart) {
 
