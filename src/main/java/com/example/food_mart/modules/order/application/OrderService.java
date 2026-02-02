@@ -57,7 +57,7 @@ public class OrderService {
             throw new Expected4xxException(ErrorCode.DONT_BUY_MONEY);
         }
 
-        // Item 개수 확인하기
+        // Stock 개수 확인하기
         String result = cartBeforeOrderService.buyableCount(cart);
         if (! result.equals("ok")) {
             throw new Expected4xxException(result);
@@ -67,7 +67,7 @@ public class OrderService {
 
     /*
         주문하기
-        1.배송정보 저장    2.Order생성    3.OrderItem들 저장    4.Item들 개수 차감   5.돈 결제
+        1.배송정보 저장    2.Order생성    3.OrderItem들 저장
      */
     public Long createOrder(Long userId, String address, Cart cart) {
 
@@ -79,5 +79,10 @@ public class OrderService {
 
         return savedOrderId;
     }
+
+    /*
+        주문 결제
+        1.돈 결제    2.Stock 배송 대기상태
+     */
 
 }

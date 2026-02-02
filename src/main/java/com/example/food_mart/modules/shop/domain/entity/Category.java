@@ -1,35 +1,30 @@
 package com.example.food_mart.modules.shop.domain.entity;
 
-import com.example.food_mart.common.exception.Expected4xxException;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_category", columnList = "categoryId")
+        @Index(name = "idx_category", columnList = "parentId")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Item {
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String name;
 
-    private int price;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> attribute;
-
-    private Long categoryId;
+    @NotNull
+    private Long parentId;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -40,10 +35,8 @@ public class Item {
     )
     private LocalDateTime updatedAt;
 
-    public Item(String name, int price, Map<String, Object> attribute, Long categoryId) {
+    public Category(String name, Long parentId) {
         this.name = name;
-        this.price = price;
-        this.attribute = attribute;
-        this.categoryId = categoryId;
+        this.parentId = parentId;
     }
 }
