@@ -16,7 +16,7 @@ public enum ErrorCode {
     , FAIL_ORDER_ITEM(HttpStatus.INTERNAL_SERVER_ERROR, "아이템 주문에 실패했습니다.")
     , FAIL_SAVE_DELIVERY(HttpStatus.INTERNAL_SERVER_ERROR, "배송정보 입력 실패했습니다.")
     , FAIL_TRANSACTION(HttpStatus.INTERNAL_SERVER_ERROR, "상품 결제에 실패했습니다.")
-    , FAIL_ITEM_COUNT_DOWN_ORDER(HttpStatus.INTERNAL_SERVER_ERROR, "주문에 따른 상품개수 변화 실패")
+
     , FAIL_EMPTY_CART(HttpStatus.INTERNAL_SERVER_ERROR, "장바구니 비우기에 실패했습니다.")
     , NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, "해당 주문은 존재하지 않습니다.")
 
@@ -44,6 +44,9 @@ public enum ErrorCode {
     , NEED_TO_LOGIN(HttpStatus.BAD_REQUEST, "로그인이 필요합니다.")
     , DONT_HAVE_AUTHORITY(HttpStatus.BAD_REQUEST, "해당 서비스를 이용할 권한이 없습니다.")
 
+    // 창고
+    , STOCK_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 제고는 찾을수 없습니다")
+    , FAIL_STOCK_COUNT_DOWN(HttpStatus.INTERNAL_SERVER_ERROR, "주문에 따른 재고개수 변화 실패")
     ;
     private final HttpStatus httpStatus;
     private final String message;

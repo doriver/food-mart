@@ -9,6 +9,7 @@ import com.example.food_mart.modules.user.domain.Wallet;
 import com.example.food_mart.modules.user.domain.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +25,7 @@ public class MoneyService {
         1. 구매자 지갑 조회해서, 차감하기
         2. 마트 장부에 반영하기
      */
+    @Transactional
     public void moneyTransaction(Long userId, Long totalPrice) {
 
         Wallet wallet = walletRepository.findByUserId(userId)

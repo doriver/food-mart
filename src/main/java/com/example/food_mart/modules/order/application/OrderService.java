@@ -20,10 +20,9 @@ public class OrderService {
 
     /*
         주문 절차
-        1. 도메인 객체 Cart생성, 장바구니에 있는 아이템들 담기
-        2. Cart에 있는 상품들 구매할수 있는지 판단
-        3. 주문하기
-        4. 장바구니 비우기( 비동기로 처리하면 좋을듯 )
+        1. 도메인 객체 Cart생성, 장바구니에 있는 아이템들 담기       2. Cart에 있는 상품들 구매할수 있는지 판단
+        3. 주문 생성                                           4. 주문 결제
+        5. 장바구니 비우기
      */
     public Long processOrder(OrderCreateDTO orderCreateDTO, UserInfo userInfo) {
         
@@ -36,8 +35,11 @@ public class OrderService {
         // 구매할수 있는지 판단( 돈, 개수 )
         judgeBuyable(userInfo.getUserId(), cart);
 
-        // 주문하기
+        // 주문 생성
         Long savedOrderId = createOrder(userInfo.getUserId(), orderCreateDTO.getAddress(), cart);
+
+        // 주문 결제
+        transactionService.money(userInfo.getUserId(), cart);
 
         // 장바구니 비우기
         cartService.emptyCartAfterOrder(userInfo.getUserId(), cart);
@@ -66,23 +68,14 @@ public class OrderService {
 
 
     /*
-        주문하기
+        주문 생성
         1.배송정보 저장    2.Order생성    3.OrderItem들 저장
      */
     public Long createOrder(Long userId, String address, Cart cart) {
-
         // 배송정보 저장
         Long savedDeliveryId = deliveryService.saveDelivery(address);
-
-        // 2 ~ 5
+        // 2, 3
         Long savedOrderId = transactionService.order(userId, savedDeliveryId, cart);
-
         return savedOrderId;
     }
-
-    /*
-        주문 결제
-        1.돈 결제    2.Stock 배송 대기상태
-     */
-
 }

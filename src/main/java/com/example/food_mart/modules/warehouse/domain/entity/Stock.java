@@ -1,5 +1,6 @@
 package com.example.food_mart.modules.warehouse.domain.entity;
 
+import com.example.food_mart.common.exception.Expected4xxException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -42,5 +43,17 @@ public class Stock {
         this.count = count;
         this.itemId = itemId;
         this.warehouseId = warehouseId;
+    }
+
+    public void minusCount(int mc) {
+        if (mc <= count) {
+            this.count = count - mc;
+        } else {
+            throw new Expected4xxException("개수가 부족합니다.");
+        }
+    }
+
+    public void plusCount(int pc) {
+        this.count = count + pc;
     }
 }
