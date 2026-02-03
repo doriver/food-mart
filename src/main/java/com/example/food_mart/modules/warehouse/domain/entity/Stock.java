@@ -25,6 +25,9 @@ public class Stock {
     private Long count;
 
     @NotNull
+    private WarehousePurpose locationType;
+
+    @NotNull
     private Long itemId;
 
     @NotNull

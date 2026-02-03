@@ -22,6 +22,7 @@ public class OrderApiController {
 
     /*
         주문하기 API
+        @param: 배송주소
      */
     @PostMapping
     public ApiResponse<Long> processOrder(@RequestBody OrderCreateDTO orderCreateDTO, UserInfo userInfo) {

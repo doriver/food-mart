@@ -14,7 +14,10 @@ import com.example.food_mart.modules.warehouse.domain.repository.WarehouseReposi
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +25,6 @@ public class CartBeforeOrderService {
 
     private final WalletReadService walletReadService;
     private final ItemRepository itemRepository;
-    private final WarehouseRepository warehouseRepository;
     private final StockRepository stockRepository;
 
     /*
@@ -37,7 +39,7 @@ public class CartBeforeOrderService {
 
     /*
         장바구니에 담긴 item과 Stock개수 비교
-         1. 장바구니에 있는 아이템 가져오기   2. 거기의 개수와 Stock개수 비교하기
+         1. 장바구니에 있는 아이템 가져오기   2. 각 아이템별 Stock개수 파악
      */
     public String buyableCount(Cart cart) {
         List<ItemInCart> itemsInCart = cart.getItemsInCart();
@@ -48,14 +50,15 @@ public class CartBeforeOrderService {
                 return itemInCart.getName() + "는 존재하지 않습니다.";
             }
 
-            ItemStorage itemStorage = item.getItemStorage();
-            List<Warehouse> warehouseList = warehouseRepository.findByWarehousePurposeIn(
-                    List.of(itemStorage.toWarehousePurpose(), WarehousePurpose.IN));
-            List<Stock> stockList = stockRepository.findByWarehouseIdInAndItemId(
-                    List.of(warehouseList.get(0).getId(), warehouseList.get(1).getId()), item.getId()
-            );
+            List<Stock> stockList = stockRepository.findAllByItemId(item.getId());
 
-            Long totalStock = stockList.stream()
+            Set<WarehousePurpose> targets = EnumSet.of(
+                    item.getItemStorage().toWarehousePurpose(), WarehousePurpose.IN);
+            List<Stock> filteredstockList = stockList.stream()
+                    .filter(stock -> targets.contains(stock.getLocationType()))
+                    .toList();
+
+            Long totalStock = filteredstockList.stream()
                     .mapToLong(Stock::getCount)
                     .sum();
 
