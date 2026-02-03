@@ -28,9 +28,9 @@ public class OrderService {
         
 //        UserUtils.checkLogin(userInfo.getUserId());
 
-        // 도메인 객체 생성, 장바구니에 있는 아이템들 담기
+        // 도메인 객체 생성후 세팅
         Cart cart = new Cart();
-        cartService.setItemListInCart(userInfo.getUserId(), cart);
+        cartService.settingCart(userInfo.getUserId(), cart);
 
         // 구매할수 있는지 판단( 돈, 개수 )
         judgeBuyable(userInfo.getUserId(), cart);
@@ -53,7 +53,6 @@ public class OrderService {
     public void judgeBuyable(Long userId, Cart cart) {
 
         // 총 가격과 있는돈 비교하기
-        cart.calculateTotalPrice();
         boolean buyablePrice = cartBeforeOrderService.buyablePrice(userId, cart.getTotalPrice());
         if (! buyablePrice) {
             throw new Expected4xxException(ErrorCode.DONT_BUY_MONEY);

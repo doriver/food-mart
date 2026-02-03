@@ -70,11 +70,16 @@ public class CartService {
     }
 
     /*
-        장바구니에 있는 아이템들 도메인 객체에 담기
+        도메인 객체 세팅
      */
-    public void setItemListInCart(Long userId, Cart cart) {
+    public void settingCart(Long userId, Cart cart) {
+        // 장바구니에 있는 아이템들 도메인 객체에 담기
         List<ItemInCart> itemsInCart = selectItemsInCart(userId);
         cart.setItemsInCart(itemsInCart);
+
+        // 필요 로직 진행
+        cart.calculateTotalPrice();
+        cart.countItems();
     }
 
 

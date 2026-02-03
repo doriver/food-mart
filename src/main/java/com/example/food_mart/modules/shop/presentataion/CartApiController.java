@@ -19,12 +19,11 @@ public class CartApiController {
 
     /*
         장바구니에 아이템 담기
+        @param: 아이템id, 개수
      */
     @PostMapping
     public ApiResponse<Long> saveItemInCart(@RequestBody ItemInCartCreateDTO itemInCartCreateDTO, UserInfo userInfo) {
-
         Long savedCartId = cartService.saveItemInCart(itemInCartCreateDTO, userInfo.getUserId());
-
         return ApiResponse.success(savedCartId);
     }
 }
