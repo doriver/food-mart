@@ -11,21 +11,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/items")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class ItemApiController {
 
     private final ItemService itemService;
 
     /*
-        todo : 재고(Stock)에 있는 물건을 item으로 등록할수 있도록할꺼, 아직 재고쪽은 미개발
-        아이템 등록( 마트에서 판매할 )
+        아이템 카테고리 등록
+        @param: 카테고리 이름, 부모 카테고리
      */
-    @PostMapping
-    public ApiResponse<Long> registerItem(@RequestBody ItemCreateDTO itemCreateDTO, UserInfo userInfo) {
-        Long registeredItemId = itemService.registerItem(itemCreateDTO, userInfo);
+    record CategoryCreateDTO(String name, Long parentId) {}
 
-        return ApiResponse.success(registeredItemId);
+    @PostMapping("/categories")
+    public ApiResponse<Long> registerCategory(@RequestBody CategoryCreateDTO dto, UserInfo userInfo) {
+        Long registeredCategoryId
+                = itemService.registerCategory(dto.name(), dto.parentId());
+        return ApiResponse.success(registeredCategoryId);
     }
 
+    /*
+        아이템 등록(마트에서 판매할)
+        @param: 이름, 가격, 보관방법, 세부속성, 카테고리
+     */
+    @PostMapping("/items")
+    public ApiResponse<Long> registerItem(@RequestBody ItemCreateDTO itemCreateDTO, UserInfo userInfo) {
+        Long registeredItemId = itemService.registerItem(itemCreateDTO, userInfo);
+        return ApiResponse.success(registeredItemId);
+    }
 }

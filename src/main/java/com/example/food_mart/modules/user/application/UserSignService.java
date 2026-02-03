@@ -1,8 +1,6 @@
 package com.example.food_mart.modules.user.application;
 
-import com.example.food_mart.modules.user.domain.Role;
-import com.example.food_mart.modules.user.domain.User;
-import com.example.food_mart.modules.user.domain.UserRepository;
+import com.example.food_mart.modules.user.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +13,7 @@ import java.util.Optional;
 public class UserSignService {
 
     private final UserRepository userRepository;
+    private final WalletRepository walletRepository;
 
     /*
         성공시, 저장된 userId값
@@ -42,6 +41,11 @@ public class UserSignService {
                 .nickname(nickname).role(userRole)
                 .build();
         User savedUser = userRepository.save(user);
+
+        try {
+            Wallet wallet = new Wallet(savedUser.getId(), 0L);
+            walletRepository.save(wallet);
+        } catch (Exception ignored) { }
 
         result.put("successValue", savedUser.getId());
         return result;

@@ -27,14 +27,15 @@ public class Wallet {
 
     private long money;
 
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(
+            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+            insertable = false, updatable = false // DB가 직접 입력하므로 ,JPA는 신경 끄라는 의미
+    )
     private LocalDateTime updatedAt;
 
-    @Builder
-    public Wallet(Long userId, long money, LocalDateTime updatedAt) {
+    public Wallet(Long userId, long money) {
         this.userId = userId;
         this.money = money;
-        this.updatedAt = updatedAt;
     }
 
     public void minusMoney(long cost) {

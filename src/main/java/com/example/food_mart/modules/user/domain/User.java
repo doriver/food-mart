@@ -19,7 +19,7 @@ public class User {
     @NotNull
     private String nickname; // 필수값, username역할도 함
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @NotNull
     private Role role;
 
