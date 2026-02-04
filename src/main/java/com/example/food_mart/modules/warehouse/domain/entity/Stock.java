@@ -21,8 +21,7 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    private Long count;
+    private long count;
 
     @NotNull
     private WarehousePurpose locationType;
@@ -48,15 +47,19 @@ public class Stock {
         this.warehouseId = warehouseId;
     }
 
-    public void minusCount(int mc) {
+    // 일반적인 개수 감소는 아님, 주문에서 사용되는 개수 감소
+    public long minusCount(long mc) {
         if (mc <= count) {
             this.count = count - mc;
+            return 0; // 추가작업 필요없음
         } else {
-            throw new Expected4xxException("개수가 부족합니다.");
+            // mc > count 인 경우
+            this.count = 0;
+            return mc - count; // 남는거 만큼 다른 재공에서 까야함
         }
     }
 
-    public void plusCount(int pc) {
+    public void plusCount(long pc) {
         this.count = count + pc;
     }
 }

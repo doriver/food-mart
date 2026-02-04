@@ -14,9 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +23,32 @@ public class StockService {
     private final ItemRepository itemRepository;
     private final WarehouseRepository warehouseRepository;
     private final StockRepository stockRepository;
+
+    // 특정 item의 stock들 파악
+    public List<Stock> getItemStockList(Item item) {
+        List<Stock> stockList = stockRepository.findAllByItemId(item.getId());
+        if (stockList.isEmpty()) {
+            throw new Expected4xxException(item.getName() + "의 재고가 없습니다.");
+        }
+
+        Set<WarehousePurpose> targets = EnumSet.of(
+                item.getItemStorage().toWarehousePurpose()); // 나중에 WarehousePurpose.IN 도 여기에 넣는걸로, 이거 넣으면 복잡해짐
+        List<Stock> filteredstockList = stockList.stream()
+                .filter(stock -> targets.contains(stock.getLocationType()))
+                .toList();
+        return filteredstockList;
+    }
+
+    // 특정 item의 재고 개수 파악
+    public Long countStockForItem(Item item) {
+        List<Stock> stockList = getItemStockList(item);
+
+        Long totalStock = stockList.stream()
+                .mapToLong(Stock::getCount)
+                .sum();
+        return totalStock;
+    }
+
 
     // 창고에 있는 재고, 배송대기 상태로(out창고로 이동)
     @Transactional
@@ -35,12 +59,7 @@ public class StockService {
         // 1. 각 아이템 재고찾기
             Item item = itemRepository.findById(itemId)
                     .orElseThrow(() -> new Expected4xxException(ErrorCode.ITEM_NOT_FOUND));
-            ItemStorage itemStorage = item.getItemStorage();
-            // 아이템이 있는 창고찾기
-            Warehouse warehouse = warehouseRepository.findByWarehousePurpose(itemStorage.toWarehousePurpose());
-            // 아이템 재고찾기
-            Stock stock = stockRepository.findByWarehouseIdAndItemId(warehouse.getId(), item.getId())
-                    .orElseThrow(() -> new Expected4xxException(ErrorCode.STOCK_NOT_FOUND));
+            List<Stock> stockList = getItemStockList(item);
 
         // 2. Stock 배송대기 상태로(out창고로 이동)
             Warehouse outWarehouse = warehouseRepository.findByWarehousePurpose(WarehousePurpose.OUT);
@@ -48,9 +67,17 @@ public class StockService {
                     .orElse(new Stock(0L, item.getId(), outWarehouse.getId()));
 
             Integer itemCount = itemAndCount.get(itemId);
-            stock.minusCount(itemCount);
+            long remainOrderItem = itemCount;
+            // 창고가 많아지는 경우는, 어디서부터 뺄지 결정하는것도 중요해질수 있음
+            for (Stock stock :stockList) {
+                remainOrderItem = stock.minusCount(remainOrderItem);
+                moveStock.add(stock);
+                if (remainOrderItem == 0) {
+                    break;
+                }
+            }
             outStock.plusCount(itemCount);
-            moveStock.addAll(List.of(stock,outStock));
+            moveStock.add(outStock);
         }
         try {
             stockRepository.saveAll(moveStock);
