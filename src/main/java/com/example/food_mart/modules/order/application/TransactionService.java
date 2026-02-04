@@ -52,7 +52,6 @@ public class TransactionService {
         moneyService.moneyTransaction(userId, cart.getTotalPrice());
 
         // 창고에 있는 재고, 배송대기 상태로(out창고로 이동)
-        cart.countItems(); // 카트에 담긴 각 itemId와 개수 세팅
         stockService.stockToOutPrepare(cart.getItemAndCountMap());
     }
 }

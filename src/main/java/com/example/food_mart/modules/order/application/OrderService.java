@@ -6,6 +6,7 @@ import com.example.food_mart.common.exception.Expected4xxException;
 import com.example.food_mart.modules.order.presentation.dto.request.OrderCreateDTO;
 import com.example.food_mart.modules.shop.application.CartService;
 import com.example.food_mart.modules.shop.domain.Cart;
+import com.example.food_mart.modules.user.application.WalletReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OrderService {
 
+    private final WalletReadService walletReadService;
     private final DeliveryService deliveryService;
     private final CartService cartService;
-    private final CartBeforeOrderService cartBeforeOrderService;
     private final TransactionService transactionService;
 
     /*
@@ -53,13 +54,13 @@ public class OrderService {
     public void judgeBuyable(Long userId, Cart cart) {
 
         // 총 가격과 있는돈 비교하기
-        boolean buyablePrice = cartBeforeOrderService.buyablePrice(userId, cart.getTotalPrice());
-        if (! buyablePrice) {
+        long userMoney = walletReadService.selectMoney(userId);
+        if (userMoney < cart.getTotalPrice()) {
             throw new Expected4xxException(ErrorCode.DONT_BUY_MONEY);
         }
 
         // Stock 개수 확인하기
-        String result = cartBeforeOrderService.buyableCount(cart);
+        String result = cartService.buyableCount(cart);
         if (! result.equals("ok")) {
             throw new Expected4xxException(result);
         }
