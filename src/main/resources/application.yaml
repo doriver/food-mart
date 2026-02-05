@@ -3,8 +3,8 @@ spring:
     name: food-mart
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/mini?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: spring.mini
+    url: jdbc:mysql://localhost:3306/mart?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: spring.mart
     password: qlqjs
   jpa:
     hibernate:

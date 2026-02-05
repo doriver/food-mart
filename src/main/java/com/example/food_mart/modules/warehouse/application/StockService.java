@@ -24,6 +24,13 @@ public class StockService {
     private final WarehouseRepository warehouseRepository;
     private final StockRepository stockRepository;
 
+    // 재고 등록
+    public Long registerStock(Long count, WarehousePurpose locationType, Long itemId, Long warehouseId) {
+        Stock saved = stockRepository.save(
+                new Stock(count, locationType, itemId, warehouseId));
+        return saved.getId();
+    }
+
     // 특정 item의 stock들 파악
     public List<Stock> getItemStockList(Item item) {
         List<Stock> stockList = stockRepository.findAllByItemId(item.getId());
@@ -64,7 +71,7 @@ public class StockService {
         // 2. Stock 배송대기 상태로(out창고로 이동)
             Warehouse outWarehouse = warehouseRepository.findByWarehousePurpose(WarehousePurpose.OUT);
             Stock outStock = stockRepository.findByWarehouseIdAndItemId(outWarehouse.getId(), item.getId())
-                    .orElse(new Stock(0L, item.getId(), outWarehouse.getId()));
+                    .orElse(new Stock(0L, WarehousePurpose.OUT, item.getId(), outWarehouse.getId()));
 
             Integer itemCount = itemAndCount.get(itemId);
             long remainOrderItem = itemCount;

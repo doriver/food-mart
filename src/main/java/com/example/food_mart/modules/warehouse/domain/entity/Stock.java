@@ -41,8 +41,9 @@ public class Stock {
     )
     private LocalDateTime updatedAt;
 
-    public Stock(Long count, Long itemId, Long warehouseId) {
+    public Stock(Long count, WarehousePurpose locationType, Long itemId, Long warehouseId) {
         this.count = count;
+        this.locationType = locationType;
         this.itemId = itemId;
         this.warehouseId = warehouseId;
     }

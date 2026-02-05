@@ -23,7 +23,6 @@ public class Category {
     @NotBlank
     private String name;
 
-    @NotNull
     private Long parentId;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
