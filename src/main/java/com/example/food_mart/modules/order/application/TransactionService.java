@@ -26,9 +26,9 @@ public class TransactionService {
 
 
     @Transactional
-    public Long order(Long userId, Long deliveryId, Cart cart) {
+    public Long order(Long userId, String deliveryAddress, Cart cart) {
         // Order생성
-        Order order = new Order(userId, deliveryId, OrderStatus.REGISTER, LocalDateTime.now());
+        Order order = new Order(userId, deliveryAddress, OrderStatus.REGISTER);
         Long savedOrderId = null;
         try {
             savedOrderId = orderRepository.save(order).getId();

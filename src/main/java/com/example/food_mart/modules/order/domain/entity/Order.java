@@ -10,8 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_user", columnList = "userId"),
-        @Index(name = "idx_delivery", columnList = "deliveryId")
+        @Index(name = "idx_user", columnList = "userId")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,21 +22,25 @@ public class Order {
     @NotNull
     private Long userId;
 
-    @NotNull
-    private Long deliveryId;
+    private String deliveryAddress;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @NotNull
     private OrderStatus status;
 
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public Order(Long userId, Long deliveryId, OrderStatus status, LocalDateTime createdAt) {
+    @Column(
+            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+            insertable = false, updatable = false // DB가 직접 입력하므로 ,JPA는 신경 끄라는 의미
+    )
+    private LocalDateTime updatedAt;
+
+    public Order(Long userId, String deliveryAddress, OrderStatus status) {
         this.userId = userId;
-        this.deliveryId = deliveryId;
+        this.deliveryAddress = deliveryAddress;
         this.status = status;
-        this.createdAt = createdAt;
     }
 
 

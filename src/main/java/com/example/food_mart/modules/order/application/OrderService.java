@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 public class OrderService {
 
     private final WalletReadService walletReadService;
-    private final DeliveryService deliveryService;
     private final CartService cartService;
     private final TransactionService transactionService;
 
@@ -37,7 +36,7 @@ public class OrderService {
         judgeBuyable(userInfo.getUserId(), cart);
 
         // 주문 생성
-        Long savedOrderId = createOrder(userInfo.getUserId(), orderCreateDTO.getAddress(), cart);
+        Long savedOrderId = transactionService.order(userInfo.getUserId(), orderCreateDTO.getAddress(), cart);
 
         // 주문 결제
         transactionService.money(userInfo.getUserId(), cart);
@@ -64,18 +63,5 @@ public class OrderService {
         if (! result.equals("ok")) {
             throw new Expected4xxException(result);
         }
-    }
-
-
-    /*
-        주문 생성
-        1.배송정보 저장    2.Order생성    3.OrderItem들 저장
-     */
-    public Long createOrder(Long userId, String address, Cart cart) {
-        // 배송정보 저장
-        Long savedDeliveryId = deliveryService.saveDelivery(address);
-        // 2, 3
-        Long savedOrderId = transactionService.order(userId, savedDeliveryId, cart);
-        return savedOrderId;
     }
 }
