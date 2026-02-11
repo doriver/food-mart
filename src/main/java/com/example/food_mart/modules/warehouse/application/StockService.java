@@ -57,10 +57,10 @@ public class StockService {
     }
 
 
-    // 창고에 있는 재고, 배송대기 상태로(out창고로 이동)
+    // 창고에 있는 재고, 배송대기 상태로
     @Transactional
     public void stockToOutPrepare(Map<Long, Integer> itemAndCount) {
-        List<Stock> moveStock = new ArrayList<>();
+        List<Stock> changedStockList = new ArrayList<>();
 
         for (Long itemId : itemAndCount.keySet()) {
         // 1. 각 아이템 재고찾기
@@ -68,26 +68,22 @@ public class StockService {
                     .orElseThrow(() -> new Expected4xxException(ErrorCode.ITEM_NOT_FOUND));
             List<Stock> stockList = getItemStockList(item);
 
-        // 2. Stock 배송대기 상태로(out창고로 이동)
-            Warehouse outWarehouse = warehouseRepository.findByWarehousePurpose(WarehousePurpose.OUT);
-            Stock outStock = stockRepository.findByWarehouseIdAndItemId(outWarehouse.getId(), item.getId())
-                    .orElse(new Stock(0L, WarehousePurpose.OUT, item.getId(), outWarehouse.getId()));
-
+        // 2. Stock 배송대기 상태로( 재고 감소 + 오더 피킹 생성 )
             Integer itemCount = itemAndCount.get(itemId);
             long remainOrderItem = itemCount;
             // 창고가 많아지는 경우는, 어디서부터 뺄지 결정하는것도 중요해질수 있음
             for (Stock stock :stockList) {
                 remainOrderItem = stock.minusCount(remainOrderItem);
-                moveStock.add(stock);
+                changedStockList.add(stock);
                 if (remainOrderItem == 0) {
                     break;
                 }
             }
-            outStock.plusCount(itemCount);
-            moveStock.add(outStock);
+
+            // 오더 피킹 생성
         }
         try {
-            stockRepository.saveAll(moveStock);
+            stockRepository.saveAll(changedStockList);
         } catch (Exception e) {
             throw new Expected4xxException(ErrorCode.FAIL_STOCK_COUNT_DOWN);
         }

@@ -51,7 +51,7 @@ public class TransactionService {
         // 구매자 돈 차감 , 마트 장부에 입금 처리
         moneyService.moneyTransaction(userId, cart.getTotalPrice());
 
-        // 창고에 있는 재고, 배송대기 상태로(out창고로 이동)
+        // 창고에 있는 재고, 배송대기 상태로
         stockService.stockToOutPrepare(cart.getItemAndCountMap());
     }
 }
