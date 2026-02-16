@@ -3,6 +3,7 @@ package com.example.food_mart.modules.order.application;
 import com.example.food_mart.common.argumentResolver.UserInfo;
 import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
+import com.example.food_mart.modules.order.domain.entity.Order;
 import com.example.food_mart.modules.order.presentation.dto.request.OrderCreateDTO;
 import com.example.food_mart.modules.shop.application.CartService;
 import com.example.food_mart.modules.shop.domain.Cart;
@@ -36,14 +37,14 @@ public class OrderService {
         judgeBuyable(userInfo.getUserId(), cart);
 
         // 주문 생성
-        Long savedOrderId = transactionService.order(userInfo.getUserId(), orderCreateDTO.getAddress(), cart);
+        Order savedOrder = transactionService.order(userInfo.getUserId(), orderCreateDTO.getAddress(), cart);
 
         // 주문 결제
-        transactionService.money(userInfo.getUserId(), cart, savedOrderId);
+        transactionService.money(userInfo.getUserId(), cart, savedOrder);
 
         // 장바구니 비우기
         cartService.emptyCartAfterOrder(userInfo.getUserId(), cart);
-        return savedOrderId;
+        return savedOrder.getId();
     }
 
     /*

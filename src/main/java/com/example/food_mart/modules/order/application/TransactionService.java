@@ -2,6 +2,7 @@ package com.example.food_mart.modules.order.application;
 
 import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
+import com.example.food_mart.common.exception.Expected5xxException;
 import com.example.food_mart.modules.order.domain.entity.Order;
 import com.example.food_mart.modules.order.domain.entity.OrderStatus;
 import com.example.food_mart.modules.order.domain.repository.OrderRepository;
@@ -26,20 +27,21 @@ public class TransactionService {
 
 
     @Transactional
-    public Long order(Long userId, String deliveryAddress, Cart cart) {
+    public Order order(Long userId, String deliveryAddress, Cart cart) {
         // Order생성
         Order order = new Order(userId, deliveryAddress, OrderStatus.REGISTER);
-        Long savedOrderId = null;
+
+        Order savedOrder = null;
         try {
-            savedOrderId = orderRepository.save(order).getId();
+            savedOrder = orderRepository.save(order);
         } catch (Exception e) {
-            throw new Expected4xxException(ErrorCode.FAIL_ORDER);
+            throw new Expected5xxException(ErrorCode.FAIL_ORDER);
         }
 
         // OrderItem들 저장
-        orderItemService.saveOrderItem(savedOrderId, cart.getItemsInCart());
+        orderItemService.saveOrderItem(savedOrder.getId(), cart.getItemsInCart());
 
-        return savedOrderId;
+        return savedOrder;
     }
 
     /*
@@ -47,11 +49,15 @@ public class TransactionService {
         1.돈 결제    2.Stock 배송 대기상태
      */
     @Transactional
-    public void money(Long userId, Cart cart, Long orderId) {
+    public void money(Long userId, Cart cart, Order order) {
         // 구매자 돈 차감 , 마트 장부에 입금 처리
         moneyService.moneyTransaction(userId, cart.getTotalPrice());
 
         // 창고에 있는 재고, 배송대기 상태로
-        stockService.stockToOutPrepare(cart.getItemAndCountMap(), orderId);
+        stockService.stockToOutPrepare(cart.getItemAndCountMap(), order.getId());
+
+        // 주문 상태 업데이트
+        order.updateStatus(OrderStatus.WAITDELIVERY);
+        orderRepository.save(order);
     }
 }
