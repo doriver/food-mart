@@ -2,12 +2,13 @@ package com.example.food_mart.modules.warehouse.application;
 
 import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
+import com.example.food_mart.common.exception.Expected5xxException;
 import com.example.food_mart.modules.shop.domain.entity.Item;
 import com.example.food_mart.modules.shop.domain.entity.ItemStorage;
 import com.example.food_mart.modules.shop.domain.repository.ItemRepository;
-import com.example.food_mart.modules.warehouse.domain.entity.Stock;
-import com.example.food_mart.modules.warehouse.domain.entity.Warehouse;
-import com.example.food_mart.modules.warehouse.domain.entity.WarehousePurpose;
+import com.example.food_mart.modules.staff.application.StaffConstants;
+import com.example.food_mart.modules.warehouse.domain.entity.*;
+import com.example.food_mart.modules.warehouse.domain.repository.PickingRepository;
 import com.example.food_mart.modules.warehouse.domain.repository.StockRepository;
 import com.example.food_mart.modules.warehouse.domain.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import java.util.*;
 public class StockService {
 
     private final ItemRepository itemRepository;
-    private final WarehouseRepository warehouseRepository;
+    private final PickingRepository pickingRepository;
     private final StockRepository stockRepository;
 
     // 재고 등록
@@ -38,10 +39,9 @@ public class StockService {
             throw new Expected4xxException(item.getName() + "의 재고가 없습니다.");
         }
 
-        Set<WarehousePurpose> targets = EnumSet.of(
-                item.getItemStorage().toWarehousePurpose()); // 나중에 WarehousePurpose.IN 도 여기에 넣는걸로, 이거 넣으면 복잡해짐
         List<Stock> filteredstockList = stockList.stream()
-                .filter(stock -> targets.contains(stock.getLocationType()))
+                .filter(stock -> stock.getLocationType()
+                        == item.getItemStorage().toWarehousePurpose())
                 .toList();
         return filteredstockList;
     }
@@ -59,8 +59,9 @@ public class StockService {
 
     // 창고에 있는 재고, 배송대기 상태로
     @Transactional
-    public void stockToOutPrepare(Map<Long, Integer> itemAndCount) {
+    public void stockToOutPrepare(Map<Long, Integer> itemAndCount, Long orderId) {
         List<Stock> changedStockList = new ArrayList<>();
+        List<Picking> pickingList = new ArrayList<>();
 
         for (Long itemId : itemAndCount.keySet()) {
         // 1. 각 아이템 재고찾기
@@ -71,21 +72,33 @@ public class StockService {
         // 2. Stock 배송대기 상태로( 재고 감소 + 오더 피킹 생성 )
             Integer itemCount = itemAndCount.get(itemId);
             long remainOrderItem = itemCount;
-            // 창고가 많아지는 경우는, 어디서부터 뺄지 결정하는것도 중요해질수 있음
+
             for (Stock stock :stockList) {
-                remainOrderItem = stock.minusCount(remainOrderItem);
-                changedStockList.add(stock);
+                // 락을 걸어서 조회(Stock들의 id로 다시 조회)한다음에, 개수빼고 업데이트( 창고가 많아지는 경우는, 어디서부터 뺄지 결정하는것도 중요해질수 있음 )
+                Stock lockedStock = stockRepository.findByIdWithPessimisticLock(stock.getId())
+                        .orElseThrow(() -> new Expected5xxException("서버측 에러 발생"));
+                
+                long pickingCount // 재고에서 실 차감 개수
+                        = Math.min(remainOrderItem, lockedStock.getCount());
+
+                remainOrderItem = lockedStock.minusCount(pickingCount);
+                changedStockList.add(lockedStock);
+
+                // 오더 피킹
+                pickingList.add(
+                  new Picking(orderId, lockedStock.getId(), pickingCount, PickingStatus.READY, StaffConstants.pickingMaster)
+                );
+
                 if (remainOrderItem == 0) {
                     break;
                 }
             }
-
-            // 오더 피킹 생성
         }
         try {
             stockRepository.saveAll(changedStockList);
+            pickingRepository.saveAll(pickingList);
         } catch (Exception e) {
-            throw new Expected4xxException(ErrorCode.FAIL_STOCK_COUNT_DOWN);
+            throw new Expected5xxException("주문하신 상품의 배송대기가 실패했습니다.");
         }
     }
 }

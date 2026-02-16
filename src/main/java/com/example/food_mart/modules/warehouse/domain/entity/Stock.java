@@ -56,7 +56,7 @@ public class Stock {
         } else {
             // mc > count 인 경우
             this.count = 0;
-            return mc - count; // 남는거 만큼 다른 재공에서 까야함
+            return mc - count; // 남는거 만큼 다른 재고에서 까야함
         }
     }
 

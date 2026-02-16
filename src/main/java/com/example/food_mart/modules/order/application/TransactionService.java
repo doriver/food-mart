@@ -47,11 +47,11 @@ public class TransactionService {
         1.돈 결제    2.Stock 배송 대기상태
      */
     @Transactional
-    public void money(Long userId, Cart cart) {
+    public void money(Long userId, Cart cart, Long orderId) {
         // 구매자 돈 차감 , 마트 장부에 입금 처리
         moneyService.moneyTransaction(userId, cart.getTotalPrice());
 
         // 창고에 있는 재고, 배송대기 상태로
-        stockService.stockToOutPrepare(cart.getItemAndCountMap());
+        stockService.stockToOutPrepare(cart.getItemAndCountMap(), orderId);
     }
 }

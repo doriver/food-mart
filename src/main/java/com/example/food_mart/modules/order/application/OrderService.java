@@ -39,7 +39,7 @@ public class OrderService {
         Long savedOrderId = transactionService.order(userInfo.getUserId(), orderCreateDTO.getAddress(), cart);
 
         // 주문 결제
-        transactionService.money(userInfo.getUserId(), cart);
+        transactionService.money(userInfo.getUserId(), cart, savedOrderId);
 
         // 장바구니 비우기
         cartService.emptyCartAfterOrder(userInfo.getUserId(), cart);
