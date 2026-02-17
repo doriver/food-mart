@@ -1,15 +1,15 @@
 package com.example.food_mart.common.argumentResolver;
 
-import com.example.food_mart.modules.user.domain.Role;
+import com.example.food_mart.modules.user.domain.UserRole;
 import lombok.Getter;
 
 @Getter
 public class UserInfo {
     private Long userId;
-    private Role role;
+    private UserRole userRole;
 
-    protected UserInfo(Long userId, Role role) {
+    protected UserInfo(Long userId, UserRole userRole) {
         this.userId = userId;
-        this.role = role;
+        this.userRole = userRole;
     }
 }

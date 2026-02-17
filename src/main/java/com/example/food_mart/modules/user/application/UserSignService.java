@@ -27,18 +27,16 @@ public class UserSignService {
             return result;
         }
 
-        Role userRole = null;
+        UserRole userRole = null;
 
         if (role.equals("user")) {
-            userRole = Role.USER;
-        } else if (role.equals("manager")) {
-            userRole = Role.MANAGER;
-        } else if (role.equals("admin")) {
-            userRole = Role.ADMIN;
+            userRole = UserRole.USER;
+        } else if (role.equals("vip")) {
+            userRole = UserRole.VIP;
         }
 
         User user = User.builder()
-                .nickname(nickname).role(userRole)
+                .nickname(nickname).userRole(userRole)
                 .build();
         User savedUser = userRepository.save(user);
 

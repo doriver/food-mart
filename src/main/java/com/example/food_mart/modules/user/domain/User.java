@@ -21,11 +21,11 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private Role role;
+    private UserRole userRole;
 
     @Builder
-    public User(String nickname, Role role) {
+    public User(String nickname, UserRole userRole) {
         this.nickname = nickname;
-        this.role = role;
+        this.userRole = userRole;
     }
 }
