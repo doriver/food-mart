@@ -1,8 +1,8 @@
 package com.example.food_mart.modules.order.application;
 
 import com.example.food_mart.common.exception.ErrorCode;
-import com.example.food_mart.common.exception.Expected4xxException;
 import com.example.food_mart.common.exception.Expected5xxException;
+import com.example.food_mart.modules.order.application.inteface.PaymentService;
 import com.example.food_mart.modules.order.domain.entity.Order;
 import com.example.food_mart.modules.order.domain.entity.OrderStatus;
 import com.example.food_mart.modules.order.domain.repository.OrderRepository;
@@ -12,14 +12,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
 
     private final OrderItemService orderItemService;
-    private final MoneyService moneyService;
+    private final PaymentService ledgerPaymentService;
     private final StockService stockService;
 
 
@@ -51,7 +49,7 @@ public class TransactionService {
     @Transactional
     public void money(Long userId, Cart cart, Order order) {
         // 구매자 돈 차감 , 마트 장부에 입금 처리
-        moneyService.moneyTransaction(userId, cart.getTotalPrice());
+        ledgerPaymentService.moneyTransaction(userId, cart.getTotalPrice());
 
         // 창고에 있는 재고, 배송대기 상태로
         stockService.stockToOutPrepare(cart.getItemAndCountMap(), order.getId());

@@ -2,6 +2,7 @@ package com.example.food_mart.modules.order.application;
 
 import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
+import com.example.food_mart.modules.order.application.inteface.PaymentService;
 import com.example.food_mart.modules.shop.domain.entity.ShopLedgerHistory;
 import com.example.food_mart.modules.shop.domain.entity.ShopTransaction;
 import com.example.food_mart.modules.shop.domain.repository.ShopLedgerHistoryRepository;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class MoneyService {
+public class LedgerPaymentService implements PaymentService {
 
     private final WalletRepository walletRepository;
     private final ShopLedgerHistoryRepository shopLedgerHistoryRepository;
@@ -26,6 +27,7 @@ public class MoneyService {
         2. 마트 장부에 반영하기
      */
     @Transactional
+    @Override
     public void moneyTransaction(Long userId, Long totalPrice) {
 
         Wallet wallet = walletRepository.findByUserId(userId)
