@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(indexes = {
         @Index(name = "idx_inbound", columnList = "inboundId"),
+        @Index(name = "idx_staff", columnList = "stackingStaffId"),
         @Index(name = "idx_item", columnList = "itemId")
 })
 @Getter
@@ -28,7 +29,14 @@ public class InboundItem {
 
     @NotNull
     private Long count;
-    
+
+    @NotNull
+    private Long stackingStaffId;
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private InboundStackingStatus inboundStackingStatus;
+
     // 유통기한 등 다른 정보들 올수 있음
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
@@ -40,9 +48,19 @@ public class InboundItem {
     )
     private LocalDateTime updatedAt;
 
-    public InboundItem(Long inboundId, Long itemId, Long count) {
+    public InboundItem(Long inboundId, Long itemId, Long count, Long stackingStaffId, InboundStackingStatus inboundStackingStatus) {
         this.inboundId = inboundId;
         this.itemId = itemId;
         this.count = count;
+        this.stackingStaffId = stackingStaffId;
+        this.inboundStackingStatus = inboundStackingStatus;
+    }
+
+    public void updateStackingStaffId(Long stackingStaffId) {
+        this.stackingStaffId = stackingStaffId;
+    }
+
+    public void updateInboundStackingStatus(InboundStackingStatus inboundStackingStatus) {
+        this.inboundStackingStatus = inboundStackingStatus;
     }
 }

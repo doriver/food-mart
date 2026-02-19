@@ -1,8 +1,10 @@
 package com.example.food_mart.modules.logistic;
 
+import com.example.food_mart.common.ApiResponse;
 import com.example.food_mart.common.argumentResolver.StaffInfo;
 import com.example.food_mart.modules.logistic.application.InboundService;
 import com.example.food_mart.modules.staff.domain.StaffRole;
+import com.example.food_mart.modules.warehouse.application.StackingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,15 +19,26 @@ import java.util.Map;
 public class InboundApiController {
 
     private final InboundService inboundService;
+    private final StackingService stackingService;
     /*
-        입고
-        todo: 입고된 물건들 창고에 뿌려주는 기능도 필요
+        입고 등록
      */
     record InboundCreateDTO(String supplier, Map<Long,Long> itemAndCount) {}
 
     @PostMapping
-    public Long inbound(@RequestBody InboundCreateDTO inboundCreateDTO, StaffInfo staffInfo) {
+    public ApiResponse inbound(@RequestBody InboundCreateDTO inboundCreateDTO, StaffInfo staffInfo) {
         Long inboundId = inboundService.registerInbound(staffInfo.getStaffId(), inboundCreateDTO.supplier(), inboundCreateDTO.itemAndCount());
-        return inboundId;
+        return ApiResponse.success(inboundId);
+    }
+
+    /*
+        특정 입고 아이템 창고에 적재완료
+     */
+    record StackingDTO(Long inboundItemId, Map<Long,Long> stockAndCount) {}
+
+    @PostMapping("/stacking")
+    public ApiResponse completeStacking(@RequestBody StackingDTO dto, StaffInfo staffInfo) {
+        stackingService.doCompleteStacking(dto.inboundItemId(), staffInfo.getStaffId(), dto.stockAndCount());
+        return ApiResponse.success();
     }
 }

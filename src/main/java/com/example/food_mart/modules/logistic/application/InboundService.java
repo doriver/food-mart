@@ -2,8 +2,10 @@ package com.example.food_mart.modules.logistic.application;
 
 import com.example.food_mart.modules.logistic.domain.entity.Inbound;
 import com.example.food_mart.modules.logistic.domain.entity.InboundItem;
+import com.example.food_mart.modules.logistic.domain.entity.InboundStackingStatus;
 import com.example.food_mart.modules.logistic.domain.repository.InboundItemRepository;
 import com.example.food_mart.modules.logistic.domain.repository.InboundRepository;
+import com.example.food_mart.modules.staff.application.StaffConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +29,7 @@ public class InboundService {
         List<InboundItem> inboundItemList = new ArrayList<>();
         itemAndCount.forEach((key, value) -> {
             inboundItemList.add(
-                    new InboundItem(inboundId, key, value));
+                    new InboundItem(inboundId, key, value, StaffConstants.stackingMaster, InboundStackingStatus.READY));
         });
         inboundItemRepository.saveAll(inboundItemList);
         return inboundId;
