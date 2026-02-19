@@ -24,7 +24,7 @@ public class Outbound {
     @NotNull
     private Long staffId; // 출고 처리 담당자(특정 권한 필요)
 
-    @NotBlank
+    @NotNull
     private Long deliveryId;
 
     @Enumerated(EnumType.STRING)

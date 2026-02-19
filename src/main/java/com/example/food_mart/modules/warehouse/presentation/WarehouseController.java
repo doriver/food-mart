@@ -2,6 +2,7 @@ package com.example.food_mart.modules.warehouse.presentation;
 
 
 import com.example.food_mart.common.ApiResponse;
+import com.example.food_mart.common.argumentResolver.StaffInfo;
 import com.example.food_mart.common.argumentResolver.UserInfo;
 import com.example.food_mart.modules.warehouse.application.WarehouseService;
 import com.example.food_mart.modules.warehouse.domain.entity.WarehousePurpose;
@@ -25,7 +26,7 @@ public class WarehouseController {
 
     record WarehouseCreateDTO(String name, String location, WarehousePurpose warehousePurpose) {}
     @PostMapping("/warehouses")
-    public ApiResponse<Long> registerWarehouse(@RequestBody WarehouseCreateDTO dto, UserInfo userInfo) {
+    public ApiResponse<Long> registerWarehouse(@RequestBody WarehouseCreateDTO dto, StaffInfo staffInfo) {
         Long registeredId = warehouseService.registerWarehouse(dto.name(), dto.location(), dto.warehousePurpose());
         return ApiResponse.success(registeredId);
     }
