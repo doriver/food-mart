@@ -28,6 +28,7 @@ public class CartService {
 
     /*
         도메인 객체 세팅
+        장바구니 아이템(ItemInCart)들을 기반으로 도메인 객체(Cart)세팅
      */
     public void settingCart(Long userId, Cart cart) {
         // 장바구니에 있는 아이템들 도메인 객체에 담기
@@ -55,7 +56,7 @@ public class CartService {
         long totalPrice = MoneyCalculation.priceCount(item.getPrice(), itemCount);
 
         // ItemInCart저장
-        ItemInCart itemInCart = new ItemInCart(userId, itemId, item.getName(), itemCount, totalPrice, LocalDateTime.now());
+        ItemInCart itemInCart = new ItemInCart(userId, itemId, item.getName(), itemCount, totalPrice);
         ItemInCart savedItemInCart = itemInCartRepository.save(itemInCart);
         return savedItemInCart.getId();
     }

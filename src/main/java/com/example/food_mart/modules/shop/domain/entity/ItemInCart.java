@@ -35,15 +35,14 @@ public class ItemInCart {
 
     private long totalPrice;
 
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public ItemInCart(Long userId, Long itemId, String name, int count, long totalPrice, LocalDateTime createdAt) {
+    public ItemInCart(Long userId, Long itemId, String name, int count, long totalPrice) {
         this.userId = userId;
         this.itemId = itemId;
         this.name = name;
         this.count = count;
         this.totalPrice = totalPrice;
-        this.createdAt = createdAt;
     }
 }
