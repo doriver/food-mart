@@ -1,6 +1,7 @@
 package com.example.food_mart.process_test.Order;
 
 import com.example.food_mart.modules.shop.domain.entity.Item;
+import com.example.food_mart.modules.shop.domain.entity.ItemStorage;
 import com.example.food_mart.modules.warehouse.application.StockService;
 import com.example.food_mart.modules.warehouse.domain.entity.Stock;
 import com.example.food_mart.modules.warehouse.domain.entity.WarehousePurpose;
@@ -15,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +33,29 @@ class StockServiceTest {
     private StockService stockService;
 
     @Test
+    @DisplayName("상품 아이디로 조회된 재고 중, 보관 목적이 일치하는 재고만 필터링")
     void getItemStockList_test() {
+        // given
+        Item item = mock(Item.class);
+        given(item.getId()).willReturn(1L);
+        given(item.getItemStorage()).willReturn(ItemStorage.COLD);
+
+        Stock stock1 = new Stock(10L, WarehousePurpose.COLD, item.getId(), 1L);
+        Stock stock2 = new Stock(25L, WarehousePurpose.COLD, item.getId(), 1L);
+        Stock stock3 = new Stock(5L, WarehousePurpose.FREEZER, item.getId(), 3L);
+
+        given(stockRepository.findAllByItemId(item.getId()))
+            .willReturn(
+                    List.of(stock1,stock2,stock3));
+
+        // when
+        List<Stock> result = stockService.getItemStockList(item);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result.contains(stock1)).isTrue();
+        assertThat(result.contains(stock2)).isTrue();
+        assertThat(result.contains(stock3)).isFalse();
     }
 
     @Test
