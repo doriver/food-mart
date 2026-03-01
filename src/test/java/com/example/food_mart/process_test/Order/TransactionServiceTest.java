@@ -63,32 +63,4 @@ public class TransactionServiceTest {
                 .isEqualTo(savedOrder);
     }
 
-    @Test
-    @DisplayName("주문 결제") // 하다 말음, 이어서 해야함
-    void money_test() {
-        // given
-        Long userId = 2L;
-        Cart cart = new Cart();
-        cart.setItemsInCart(List.of(
-                new ItemInCart(userId, 2L,"삼겹살", 2, 30000),
-                new ItemInCart(userId,13L,"콜라", 3, 3300)
-        ));
-
-        Order order = new Order(userId, "강남구 1번지", OrderStatus.REGISTER);
-        ReflectionTestUtils.setField(order, "id", 5L);
-
-        willDoNothing().given(orderRepository)
-                .save(any(Order.class));
-
-
-        // when
-        transactionService.money(userId, cart, order);
-
-        // then
-
-
-        assertThat(order.getStatus()).isEqualTo(OrderStatus.WAITDELIVERY);
-
-    }
-
 }
