@@ -3,10 +3,10 @@ package com.example.food_mart.modules.order.application;
 import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
 import com.example.food_mart.common.utils.DtoConvert;
-import com.example.food_mart.modules.order.domain.entity.Delivery;
+import com.example.food_mart.modules.logistic.domain.entity.Delivery;
 import com.example.food_mart.modules.order.domain.entity.Order;
 import com.example.food_mart.modules.order.domain.entity.OrderItem;
-import com.example.food_mart.modules.order.domain.repository.DeliveryRepository;
+import com.example.food_mart.modules.logistic.domain.repository.DeliveryRepository;
 import com.example.food_mart.modules.order.domain.repository.OrderItemRepository;
 import com.example.food_mart.modules.order.domain.repository.OrderRepository;
 import com.example.food_mart.modules.order.presentation.dto.response.OrderDetailDTO;
@@ -55,12 +55,12 @@ public class OrderReadService {
         List<OrderedItemDTO> orderedItemList = DtoConvert.orderItemsToDTOs(orderItems);
 
         // Delivery
-        Delivery delivery = deliveryRepository.findById(order.getDeliveryId())
-                .orElseThrow(() -> new Expected4xxException(ErrorCode.NOT_FOUND_DELIVERY));
+//        Delivery delivery = deliveryRepository.findById(order.getDeliveryId())
+//                .orElseThrow(() -> new Expected4xxException(ErrorCode.NOT_FOUND_DELIVERY));
 
         // DTO
-        OrderDetailDTO orderDetailDTO = new OrderDetailDTO(order.getStatus(), order.getCreatedAt(), orderedItemList, delivery.getAddress(), delivery.getStatus());
-        orderDetailDTO.calculateAndSetTotalPrice();
-        return orderDetailDTO;
+//        OrderDetailDTO orderDetailDTO = new OrderDetailDTO(order.getStatus(), order.getCreatedAt(), orderedItemList, delivery.getAddress(), delivery.getStatus());
+//        orderDetailDTO.calculateAndSetTotalPrice();
+        return null;
     }
 }
