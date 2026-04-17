@@ -4,6 +4,7 @@ import com.example.food_mart.common.ApiResponse;
 import com.example.food_mart.common.argumentResolver.UserInfo;
 import com.example.food_mart.modules.order.application.OrderReadService;
 import com.example.food_mart.modules.order.application.OrderService;
+import com.example.food_mart.modules.order.presentation.dto.request.OrderCancelDTO;
 import com.example.food_mart.modules.order.presentation.dto.request.OrderCreateDTO;
 import com.example.food_mart.modules.order.presentation.dto.response.OrderDetailDTO;
 import com.example.food_mart.modules.order.presentation.dto.response.OrderReadDTO;
@@ -40,6 +41,19 @@ public class OrderApiController {
         return ApiResponse.success(orderList);
     }
 
+
+    /*
+        주문 취소 API
+        @param: orderId, 취소사유
+     */
+    @PostMapping("/{id}/cancel")
+    public ApiResponse<String> cancelOrder(
+            @PathVariable("id") Long orderId,
+            @RequestBody OrderCancelDTO orderCancelDTO,
+            UserInfo userInfo) {
+        orderService.cancelOrder(orderId, userInfo.getUserId(), orderCancelDTO.getReason());
+        return ApiResponse.success();
+    }
 
     /*
         주문상세 조회 API

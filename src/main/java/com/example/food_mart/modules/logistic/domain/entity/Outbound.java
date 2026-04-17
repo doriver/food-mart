@@ -45,4 +45,8 @@ public class Outbound {
         this.deliveryId = deliveryId;
         this.outboundStatus = outboundStatus;
     }
+
+    public void updateOutboundStatus(OutboundStatus outboundStatus) {
+        this.outboundStatus = outboundStatus;
+    }
 }

@@ -39,4 +39,15 @@ public class OutboundService {
         Outbound outbound = outboundRepository.save(new Outbound(staffId, delivery.getId(), OutboundStatus.READY));
         return outbound.getId();
     }
+
+    // 주문 취소 시 출고 취소 처리 (출고등록이 된 경우에만)
+    @Transactional
+    public void cancelOutboundIfExists(Long orderId) {
+        deliveryRepository.findByOrderId(orderId).ifPresent(delivery -> {
+            outboundRepository.findByDeliveryId(delivery.getId()).ifPresent(outbound -> {
+                outbound.updateOutboundStatus(OutboundStatus.CANCEL);
+                outboundRepository.save(outbound);
+            });
+        });
+    }
 }

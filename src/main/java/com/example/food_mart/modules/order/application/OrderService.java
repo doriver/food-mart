@@ -4,6 +4,8 @@ import com.example.food_mart.common.argumentResolver.UserInfo;
 import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
 import com.example.food_mart.modules.order.domain.entity.Order;
+import com.example.food_mart.modules.order.domain.entity.OrderStatus;
+import com.example.food_mart.modules.order.domain.repository.OrderRepository;
 import com.example.food_mart.modules.order.presentation.dto.request.OrderCreateDTO;
 import com.example.food_mart.modules.shop.application.CartService;
 import com.example.food_mart.modules.shop.domain.Cart;
@@ -18,6 +20,7 @@ public class OrderService {
     private final WalletReadService walletReadService;
     private final CartService cartService;
     private final TransactionService transactionService;
+    private final OrderRepository orderRepository;
 
     /*
         주문 절차
@@ -64,5 +67,29 @@ public class OrderService {
         if (! result.equals("ok")) {
             throw new Expected4xxException(result);
         }
+    }
+
+    /*
+        주문 취소
+        1. 주문 조회 및 소유권 확인
+        2. 취소 가능 상태 확인
+        3. 취소 처리
+     */
+    public void cancelOrder(Long orderId, Long userId, String reason) {
+        // 주문 조회 및 소유권 확인
+        Order order = orderRepository.findByIdAndUserId(orderId, userId)
+                .orElseThrow(() -> new Expected4xxException(ErrorCode.NOT_FOUND_ORDER));
+
+        // 취소 가능 상태 확인
+        if (order.getStatus() == OrderStatus.CANCEL) {
+            throw new Expected4xxException(ErrorCode.ALREADY_CANCELLED);
+        }
+        if (order.getStatus() != OrderStatus.REGISTER
+                && order.getStatus() != OrderStatus.WAITDELIVERY) {
+            throw new Expected4xxException(ErrorCode.NOT_CANCELLABLE_STATUS);
+        }
+
+        // 취소 처리
+        transactionService.cancelOrder(order, reason);
     }
 }

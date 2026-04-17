@@ -43,4 +43,27 @@ public class LedgerPaymentService implements PaymentService {
             throw new Expected4xxException(ErrorCode.FAIL_TRANSACTION);
         }
     }
+
+    /*
+        주문 취소 시 환불 처리
+        1. 구매자 지갑 조회해서, 환불하기
+        2. 마트 장부에 환불 반영하기
+     */
+    @Transactional
+    @Override
+    public void refundTransaction(Long userId, Long totalPrice) {
+
+        Wallet wallet = walletRepository.findByUserId(userId)
+                .orElseThrow(() -> new Expected4xxException(ErrorCode.WALLET_NOT_FOUND));
+        wallet.plusMoney(totalPrice);
+
+        ShopLedgerHistory shopLedgerHistory = new ShopLedgerHistory(wallet.getId(), ShopTransaction.REFUND, totalPrice, LocalDateTime.now());
+
+        try {
+            walletRepository.save(wallet);
+            shopLedgerHistoryRepository.save(shopLedgerHistory);
+        } catch (Exception e) {
+            throw new Expected4xxException(ErrorCode.FAIL_TRANSACTION);
+        }
+    }
 }

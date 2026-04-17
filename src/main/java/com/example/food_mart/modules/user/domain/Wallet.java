@@ -45,4 +45,8 @@ public class Wallet {
             throw new Expected4xxException(ErrorCode.NOT_ENOUGH_MONEY);
         }
     }
+
+    public void plusMoney(long cost) {
+        this.money = money + cost;
+    }
 }

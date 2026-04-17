@@ -101,4 +101,25 @@ public class StockService {
             throw new Expected5xxException("주문하신 상품의 배송대기가 실패했습니다.");
         }
     }
+
+    // 주문 취소 시 재고 복원
+    @Transactional
+    public void restoreStockFromPickings(Long orderId) {
+        List<Picking> pickingList = pickingRepository.findAllByOrderId(orderId);
+
+        List<Stock> changedStockList = new ArrayList<>();
+        for (Picking picking : pickingList) {
+            Stock lockedStock = stockRepository.findByIdWithPessimisticLock(picking.getStockId())
+                    .orElseThrow(() -> new Expected5xxException("서버측 에러 발생"));
+            lockedStock.plusCount(picking.getCount());
+            changedStockList.add(lockedStock);
+        }
+
+        try {
+            stockRepository.saveAll(changedStockList);
+            pickingRepository.deleteAll(pickingList);
+        } catch (Exception e) {
+            throw new Expected5xxException("주문 취소에 따른 재고 복원에 실패했습니다.");
+        }
+    }
 }
