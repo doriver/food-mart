@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(./gradlew compileJava compileTestJava)",
-      "Bash(./gradlew test *)"
+      "Bash(./gradlew test *)",
+      "Bash(xargs grep *)"
     ]
   }
 }

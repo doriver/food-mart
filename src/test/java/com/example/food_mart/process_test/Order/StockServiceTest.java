@@ -5,6 +5,7 @@ import com.example.food_mart.modules.shop.domain.entity.ItemStorage;
 import com.example.food_mart.modules.shop.domain.repository.ItemRepository;
 import com.example.food_mart.modules.warehouse.application.StockService;
 import com.example.food_mart.modules.warehouse.domain.entity.Picking;
+import com.example.food_mart.modules.warehouse.domain.entity.PickingStatus;
 import com.example.food_mart.modules.warehouse.domain.entity.Stock;
 import com.example.food_mart.modules.warehouse.domain.entity.WarehousePurpose;
 import com.example.food_mart.modules.warehouse.domain.repository.PickingRepository;
@@ -18,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -139,5 +141,52 @@ class StockServiceTest {
                 tuple(1L, 2L),
                 tuple(3L, 3L)
         );
+    }
+
+    @Test
+    @DisplayName("주문 취소 시, Picking 기준으로 재고 수량 복원 + Picking 삭제")
+    void restoreStockFromPickings_success() {
+        // given
+        Long orderId = 5L;
+
+        Picking picking1 = new Picking(orderId, 1L, 5L, PickingStatus.READY, 1L);
+        Picking picking2 = new Picking(orderId, 2L, 3L, PickingStatus.READY, 1L);
+
+        Stock stock1 = new Stock(10L, WarehousePurpose.COLD, 100L, 1L);
+        ReflectionTestUtils.setField(stock1, "id", 1L);
+        Stock stock2 = new Stock(20L, WarehousePurpose.COLD, 101L, 1L);
+        ReflectionTestUtils.setField(stock2, "id", 2L);
+
+        given(pickingRepository.findAllByOrderId(orderId)).willReturn(List.of(picking1, picking2));
+        given(stockRepository.findByIdWithPessimisticLock(1L)).willReturn(Optional.of(stock1));
+        given(stockRepository.findByIdWithPessimisticLock(2L)).willReturn(Optional.of(stock2));
+
+        // when
+        stockService.restoreStockFromPickings(orderId);
+
+        // then
+        ArgumentCaptor<List<Stock>> stockCaptor = ArgumentCaptor.forClass(List.class);
+        verify(stockRepository).saveAll(stockCaptor.capture());
+        assertThat(stockCaptor.getValue()).extracting("id", "count").containsExactlyInAnyOrder(
+                tuple(1L, 15L),  // 10 + 5
+                tuple(2L, 23L)   // 20 + 3
+        );
+        verify(pickingRepository).deleteAll(List.of(picking1, picking2));
+    }
+
+    @Test
+    @DisplayName("Picking이 없는 경우 재고 복원 없이 종료")
+    void restoreStockFromPickings_noPickings() {
+        // given
+        Long orderId = 99L;
+        given(pickingRepository.findAllByOrderId(orderId)).willReturn(Collections.emptyList());
+
+        // when
+        stockService.restoreStockFromPickings(orderId);
+
+        // then
+        verify(stockRepository, never()).findByIdWithPessimisticLock(any());
+        verify(stockRepository).saveAll(Collections.emptyList());
+        verify(pickingRepository).deleteAll(Collections.emptyList());
     }
 }
