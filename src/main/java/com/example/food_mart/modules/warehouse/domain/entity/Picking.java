@@ -52,4 +52,9 @@ public class Picking {
         this.pickingStatus = pickingStatus;
         this.staffId = staffId;
     }
+
+    public void completeBy(Long staffId) {
+        this.pickingStatus = PickingStatus.COMPLETED;
+        this.staffId = staffId;
+    }
 }

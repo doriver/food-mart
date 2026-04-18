@@ -49,6 +49,10 @@ public enum ErrorCode {
     // 창고
     , STOCK_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 제고는 찾을수 없습니다")
     , FAIL_STOCK_COUNT_DOWN(HttpStatus.INTERNAL_SERVER_ERROR, "주문에 따른 재고개수 변화 실패")
+
+    // 피킹
+    , NOT_FOUND_PICKING(HttpStatus.BAD_REQUEST, "해당 피킹 내역을 찾을 수 없습니다.")
+    , ALREADY_COMPLETED_PICKING(HttpStatus.BAD_REQUEST, "이미 완료된 피킹입니다.")
     ;
     private final HttpStatus httpStatus;
     private final String message;
