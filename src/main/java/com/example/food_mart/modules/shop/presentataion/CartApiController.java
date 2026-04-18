@@ -4,6 +4,7 @@ import com.example.food_mart.common.ApiResponse;
 import com.example.food_mart.common.argumentResolver.UserInfo;
 import com.example.food_mart.modules.shop.application.CartService;
 import com.example.food_mart.modules.shop.presentataion.dto.request.ItemInCartCreateDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ public class CartApiController {
         장바구니에 아이템 담기
         @param: 아이템id, 개수
      */
+    @Operation(summary = "장바구니에 아이템 담기")
     @PostMapping
     public ApiResponse<Long> saveItemInCart(@RequestBody ItemInCartCreateDTO itemInCartCreateDTO, UserInfo userInfo) {
         Long savedCartId = cartService.saveItemInCart(itemInCartCreateDTO, userInfo.getUserId());

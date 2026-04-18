@@ -3,6 +3,7 @@ package com.example.food_mart.modules.logistic;
 import com.example.food_mart.common.argumentResolver.StaffInfo;
 import com.example.food_mart.modules.logistic.application.OutboundService;
 import com.example.food_mart.modules.logistic.domain.entity.DeliveryCompany;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,7 @@ public class OutboundApiController {
      */
     record OutboundCreateDTO(Long orderId, String address, DeliveryCompany deliveryCompany, String trackingCode) {}
 
+    @Operation(summary = "출고 등록")
     @PostMapping
     public Long outbound(@RequestBody OutboundCreateDTO dto, StaffInfo staffInfo) {
         Long outboundId = outboundService.registerOutbound(dto.orderId(), dto.address(), dto.deliveryCompany(), dto.trackingCode(), staffInfo.getStaffId());

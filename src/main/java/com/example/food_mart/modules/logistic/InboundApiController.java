@@ -5,6 +5,7 @@ import com.example.food_mart.common.argumentResolver.StaffInfo;
 import com.example.food_mart.modules.logistic.application.InboundService;
 import com.example.food_mart.modules.staff.domain.StaffRole;
 import com.example.food_mart.modules.warehouse.application.StackingService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,7 @@ public class InboundApiController {
      */
     record InboundCreateDTO(String supplier, Map<Long,Long> itemAndCount) {}
 
+    @Operation(summary = "입고 등록")
     @PostMapping
     public ApiResponse inbound(@RequestBody InboundCreateDTO inboundCreateDTO, StaffInfo staffInfo) {
         Long inboundId = inboundService.registerInbound(staffInfo.getStaffId(), inboundCreateDTO.supplier(), inboundCreateDTO.itemAndCount());
@@ -36,6 +38,7 @@ public class InboundApiController {
      */
     record StackingDTO(Long inboundItemId, Map<Long,Long> stockAndCount) {}
 
+    @Operation(summary = "특정 입고 아이템 창고에 적재완료")
     @PostMapping("/stacking")
     public ApiResponse completeStacking(@RequestBody StackingDTO dto, StaffInfo staffInfo) {
         stackingService.doCompleteStacking(dto.inboundItemId(), staffInfo.getStaffId(), dto.stockAndCount());

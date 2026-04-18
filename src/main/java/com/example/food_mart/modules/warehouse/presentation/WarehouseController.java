@@ -6,6 +6,7 @@ import com.example.food_mart.common.argumentResolver.StaffInfo;
 import com.example.food_mart.common.argumentResolver.UserInfo;
 import com.example.food_mart.modules.warehouse.application.WarehouseService;
 import com.example.food_mart.modules.warehouse.domain.entity.WarehousePurpose;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +24,8 @@ public class WarehouseController {
         창고 등록
         @param: 이름, 위치, 창고목적
      */
-
     record WarehouseCreateDTO(String name, String location, WarehousePurpose warehousePurpose) {}
+    @Operation(summary = "창고등록")
     @PostMapping("/warehouses")
     public ApiResponse<Long> registerWarehouse(@RequestBody WarehouseCreateDTO dto, StaffInfo staffInfo) {
         Long registeredId = warehouseService.registerWarehouse(dto.name(), dto.location(), dto.warehousePurpose());

@@ -66,6 +66,7 @@ public class UserApiController {
     /*
         로그아웃
      */
+    @Operation(summary = "로그아웃")
     @GetMapping("/sign-out")
     public String signOut(HttpServletRequest request) {
         // 요청에 담긴 세션ID에 해당하는 세션이 있으면 그 세션 반환

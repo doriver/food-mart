@@ -8,6 +8,7 @@ import com.example.food_mart.modules.order.presentation.dto.request.OrderCancelD
 import com.example.food_mart.modules.order.presentation.dto.request.OrderCreateDTO;
 import com.example.food_mart.modules.order.presentation.dto.response.OrderDetailDTO;
 import com.example.food_mart.modules.order.presentation.dto.response.OrderReadDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class OrderApiController {
         주문하기 API
         @param: 배송주소
      */
+    @Operation(summary = "주문하기")
     @PostMapping
     public ApiResponse<Long> processOrder(@RequestBody OrderCreateDTO orderCreateDTO, UserInfo userInfo) {
         Long savedOrderId = orderService.processOrder(orderCreateDTO, userInfo);
@@ -35,6 +37,7 @@ public class OrderApiController {
         주문내역 조회 API
         회원의 주문 목록
      */
+    @Operation(summary = "주문내역 조회")
     @GetMapping
     public ApiResponse<List<OrderReadDTO>> readOrders(UserInfo userInfo) {
         List<OrderReadDTO> orderList = orderReadService.readOrders(userInfo.getUserId());
@@ -46,6 +49,7 @@ public class OrderApiController {
         주문 취소 API
         @param: orderId, 취소사유
      */
+    @Operation(summary = "주문 취소")
     @PostMapping("/{id}/cancel")
     public ApiResponse<String> cancelOrder(
             @PathVariable("id") Long orderId,
@@ -59,6 +63,7 @@ public class OrderApiController {
         주문상세 조회 API
         Order, OrderItem, Delivery, 이 외 정보
      */
+    @Operation(summary = "주문상세 조회")
     @GetMapping("/{id}")
     public ApiResponse<OrderDetailDTO> readOrderDetail(@PathVariable("id") Long orderId, UserInfo userInfo) {
         OrderDetailDTO orderDetailDTO = orderReadService.readOrderDetail(userInfo.getUserId(), orderId);

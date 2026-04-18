@@ -26,7 +26,7 @@ public class StaffApiController {
         회원가입
      */
     record StaffCreateDTO(String nickname, StaffRole staffRole) {}
-
+    @Operation(summary = "직원 회원가입")
     @PostMapping("/sign-up")
     public ApiResponse signUp(@RequestBody StaffCreateDTO staffCreateDTO) {
         Staff savedStaff = staffService.registerStaff(staffCreateDTO.nickname(), staffCreateDTO.staffRole());
@@ -36,6 +36,7 @@ public class StaffApiController {
     /*
         로그인
      */
+    @Operation(summary = "직원 로그인")
     @PostMapping("/sign-in")
     public String signIn(@RequestParam("nickname") String nickname, HttpSession session) {
         Staff staff = staffService.authenticateStaff(nickname);
@@ -55,6 +56,7 @@ public class StaffApiController {
     /*
         로그아웃
      */
+    @Operation(summary = "직원 로그아웃")
     @GetMapping("/sign-out")
     public String signOut(HttpServletRequest request) {
         // 요청에 담긴 세션ID에 해당하는 세션이 있으면 그 세션 반환

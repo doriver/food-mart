@@ -4,6 +4,7 @@ import com.example.food_mart.common.ApiResponse;
 import com.example.food_mart.common.argumentResolver.UserInfo;
 import com.example.food_mart.modules.warehouse.application.StockService;
 import com.example.food_mart.modules.warehouse.domain.entity.WarehousePurpose;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ public class StockController {
         나중에 입고쪽이랑 연관해서 변경할수도
      */
     record StockCreateDTO(Long count, WarehousePurpose locationType, Long itemId, Long warehouseId) {}
+    @Operation(summary = "재고등록")
     @PostMapping("/stocks")
     public ApiResponse<Long> registerStock(@RequestBody StockCreateDTO dto, UserInfo userInfo) {
         Long registeredId = stockService.registerStock(dto.count(), dto.locationType(), dto.itemId(), dto.warehouseId());
