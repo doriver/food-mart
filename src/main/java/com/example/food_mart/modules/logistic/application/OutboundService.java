@@ -1,5 +1,6 @@
 package com.example.food_mart.modules.logistic.application;
 
+import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
 import com.example.food_mart.modules.logistic.domain.entity.Delivery;
 import com.example.food_mart.modules.logistic.domain.entity.DeliveryCompany;
@@ -37,6 +38,19 @@ public class OutboundService {
 
         Delivery delivery = deliveryRepository.save(new Delivery(orderId, address, deliveryCompany, trackingCode));
         Outbound outbound = outboundRepository.save(new Outbound(staffId, delivery.getId(), OutboundStatus.READY));
+        return outbound.getId();
+    }
+
+    @Transactional
+    public Long completeOutbound(Long outboundId, Long staffId) {
+        Outbound outbound = outboundRepository.findById(outboundId)
+                .orElseThrow(() -> new Expected4xxException(ErrorCode.NOT_FOUND_OUTBOUND));
+
+        if (outbound.getOutboundStatus() != OutboundStatus.READY) {
+            throw new Expected4xxException(ErrorCode.NOT_READY_OUTBOUND);
+        }
+
+        outbound.completeBy(staffId);
         return outbound.getId();
     }
 

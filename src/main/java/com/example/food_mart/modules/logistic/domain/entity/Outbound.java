@@ -49,4 +49,9 @@ public class Outbound {
     public void updateOutboundStatus(OutboundStatus outboundStatus) {
         this.outboundStatus = outboundStatus;
     }
+
+    public void completeBy(Long staffId) {
+        this.outboundStatus = OutboundStatus.COMPLETED;
+        this.staffId = staffId;
+    }
 }

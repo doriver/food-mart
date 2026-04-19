@@ -3,7 +3,8 @@
     "allow": [
       "Bash(./gradlew compileJava compileTestJava)",
       "Bash(./gradlew test *)",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "Bash(./gradlew compileJava -q)"
     ]
   }
 }

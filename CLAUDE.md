@@ -52,3 +52,6 @@ Module-based package structure under `com.example.food_mart.modules`:
 
 ## API Documentation
 Swagger UI available at `/swagger-ui/index.html` when the app is running (springdoc-openapi).
+
+## Conventions
+- 기능 개발 시 테스트 코드 작성 금지 (명시적 요청 시에만 작성)
