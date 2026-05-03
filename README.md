@@ -33,6 +33,8 @@
     <ol>
       <li> Order, OrderItem 생성
       </li>
+      <li> ItemInCart 삭제
+      </li>
       <li> Wallet에서 돈 차감, ShopLedgerHistory (입금)생성    
       </li>
       <li> Order 상태 업데이트
@@ -47,5 +49,58 @@
 
 ### 입고
 
+<details>
+  <summary>프로세스</summary>
+  <div>
+    <ol>
+      <li> (외부에서 물건 도착한 상황)
+      </li>
+      <li> 물건 받은 직원이 입고 등록 신청   
+      </li>
+      <li> 입고, 입고 아이템 생성
+      </li>
+      <li> (적재 담당자가 창고에 적재 예정)
+      </li>
+    </ol>
+  </div>
+</details>
+<details>
+  <summary>최종 데이터 변화</summary>
+  <div>
+    <ol>
+      <li> Inbound, InboundItem 생성
+      </li>
+    </ol>
+  </div>
+</details>
+
+#### 입고된 물건 적재
+
+<details>
+  <summary>프로세스</summary>
+  <div>
+    <ol>
+      <li> 직원이 입고된 물건들 조회
+      </li>
+      <li> (아이템과 자리있는 창고 매핑)   
+      </li>
+      <li> 창고에 아이템 적재후, 적재 완료요청 
+      </li>
+      <li> 추가한 재고 증가, 입고아이템 적재 완료 업데이트
+      </li>
+    </ol>
+  </div>
+</details>
+<details>
+  <summary>최종 데이터 변화</summary>
+  <div>
+    <ol>
+      <li> Stock 생성 or 개수 증가
+      </li>
+      <li> InboundItem 적재 상태, 적재한 직원 업데이트
+      </li>
+    </ol>
+  </div>
+</details>
 
 ### 출고
