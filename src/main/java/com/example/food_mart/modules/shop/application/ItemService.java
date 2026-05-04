@@ -31,7 +31,8 @@ public class ItemService {
     public Long registerItem(ItemCreateDTO itemCreateDTO, UserInfo userInfo) {
 //        UserUtils.checkLogin(userInfo.getUserId());
 //        UserUtils.checkManagerAdmin(userInfo.getRole());
-        Item item = new Item(itemCreateDTO.getName(), itemCreateDTO.getPrice(), itemCreateDTO.getItemStorage(), itemCreateDTO.getAttribute(), itemCreateDTO.getCategoryId());
+        Item item = new Item(itemCreateDTO.getName(), itemCreateDTO.getPrice(), itemCreateDTO.getItemStorage(), itemCreateDTO.getAttribute(), itemCreateDTO.getCategoryId(),
+                itemCreateDTO.getDescription(), itemCreateDTO.getImagePath(), itemCreateDTO.getStatus());
         Item savedItem = itemRepository.save(item);
         return savedItem.getId();
     }

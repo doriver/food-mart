@@ -36,6 +36,15 @@ public class Item {
 
     private Long categoryId;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    private String imagePath;
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private ItemStatus status;
+
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -45,11 +54,15 @@ public class Item {
     )
     private LocalDateTime updatedAt;
 
-    public Item(String name, int price, ItemStorage itemStorage, Map<String, Object> attribute, Long categoryId) {
+    public Item(String name, int price, ItemStorage itemStorage, Map<String, Object> attribute, Long categoryId,
+                String description, String imagePath, ItemStatus status) {
         this.name = name;
         this.price = price;
         this.itemStorage = itemStorage;
         this.attribute = attribute;
         this.categoryId = categoryId;
+        this.description = description;
+        this.imagePath = imagePath;
+        this.status = status;
     }
 }

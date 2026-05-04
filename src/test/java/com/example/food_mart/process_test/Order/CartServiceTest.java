@@ -4,6 +4,7 @@ import com.example.food_mart.modules.shop.application.CartService;
 import com.example.food_mart.modules.shop.domain.Cart;
 import com.example.food_mart.modules.shop.domain.entity.Item;
 import com.example.food_mart.modules.shop.domain.entity.ItemInCart;
+import com.example.food_mart.modules.shop.domain.entity.ItemStatus;
 import com.example.food_mart.modules.shop.domain.entity.ItemStorage;
 import com.example.food_mart.modules.shop.domain.repository.ItemInCartRepository;
 import com.example.food_mart.modules.shop.domain.repository.ItemRepository;
@@ -95,8 +96,8 @@ public class CartServiceTest {
                 itemInCart01,
                 itemInCart02
         ));
-        Item item01 = new Item("삼겹살", 15000, ItemStorage.COLD, Map.of("가격단위","600g","원산지","국내산"), 3L);
-        Item item02 = new Item("콜라", 1100, ItemStorage.COLD, Map.of("용량","500ml","제조사","팹시"),7L);
+        Item item01 = new Item("삼겹살", 15000, ItemStorage.COLD, Map.of("가격단위","600g","원산지","국내산"), 3L, null, null, ItemStatus.ACTIVE);
+        Item item02 = new Item("콜라", 1100, ItemStorage.COLD, Map.of("용량","500ml","제조사","팹시"),7L, null, null, ItemStatus.ACTIVE);
 
         given(itemRepository.findById(itemInCart01.getItemId()))
                 .willReturn(Optional.of(item01));

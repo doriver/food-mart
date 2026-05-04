@@ -1,5 +1,6 @@
 package com.example.food_mart.modules.shop.presentataion.dto.request;
 
+import com.example.food_mart.modules.shop.domain.entity.ItemStatus;
 import com.example.food_mart.modules.shop.domain.entity.ItemStorage;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,4 +16,7 @@ public class ItemCreateDTO {
     private ItemStorage itemStorage;
     private Map<String, Object> attribute;
     private Long categoryId;
+    private String description;
+    private String imagePath;
+    private ItemStatus status;
 }

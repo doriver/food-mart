@@ -1,6 +1,7 @@
 package com.example.food_mart.process_test.Order;
 
 import com.example.food_mart.modules.shop.domain.entity.Item;
+import com.example.food_mart.modules.shop.domain.entity.ItemStatus;
 import com.example.food_mart.modules.shop.domain.entity.ItemStorage;
 import com.example.food_mart.modules.shop.domain.repository.ItemRepository;
 import com.example.food_mart.modules.warehouse.application.StockService;
@@ -101,8 +102,8 @@ class StockServiceTest {
         Long orderId = 5L;
         Map<Long, Integer> itemAndCount = Map.of(2L, 2, 13L, 3);
 
-        Item item01 = new Item("삼겹살", 15000, ItemStorage.COLD, Map.of("가격단위","600g","원산지","국내산"), 3L);
-        Item item02 = new Item("콜라", 1100, ItemStorage.COLD, Map.of("용량","500ml","제조사","팹시"),7L);
+        Item item01 = new Item("삼겹살", 15000, ItemStorage.COLD, Map.of("가격단위","600g","원산지","국내산"), 3L, null, null, ItemStatus.ACTIVE);
+        Item item02 = new Item("콜라", 1100, ItemStorage.COLD, Map.of("용량","500ml","제조사","팹시"),7L, null, null, ItemStatus.ACTIVE);
 
         given(itemRepository.findById(2L)).willReturn(Optional.of(item01));
         given(itemRepository.findById(13L)).willReturn(Optional.of(item02));
