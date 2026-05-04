@@ -36,6 +36,12 @@ public class ItemApiController {
     }
 
 
+    @Operation(summary = "상품 상세 조회")
+    @GetMapping("/items/{itemId}")
+    public ApiResponse<ItemResponse> getItem(@PathVariable Long itemId) {
+        return ApiResponse.success(itemService.getItem(itemId));
+    }
+
     @Operation(summary = "상품 목록 조회")
     @GetMapping("/items")
     public ApiResponse<Page<ItemResponse>> getItemList(

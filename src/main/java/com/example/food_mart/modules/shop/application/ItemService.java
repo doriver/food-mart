@@ -2,6 +2,8 @@ package com.example.food_mart.modules.shop.application;
 
 import com.example.food_mart.common.FileStorageService;
 import com.example.food_mart.common.argumentResolver.UserInfo;
+import com.example.food_mart.common.exception.ErrorCode;
+import com.example.food_mart.common.exception.Expected4xxException;
 import com.example.food_mart.modules.shop.domain.entity.Category;
 import com.example.food_mart.modules.shop.domain.entity.Item;
 import com.example.food_mart.modules.shop.domain.entity.ItemStatus;
@@ -34,6 +36,15 @@ public class ItemService {
         return savedCategory.getId();
     }
 
+
+    public ItemResponse getItem(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new Expected4xxException(ErrorCode.ITEM_NOT_FOUND));
+        if (item.getStatus() == ItemStatus.HIDDEN) {
+            throw new Expected4xxException(ErrorCode.ITEM_NOT_FOUND);
+        }
+        return ItemResponse.from(item);
+    }
 
     public Page<ItemResponse> getItemList(Long categoryId, Pageable pageable) {
         List<ItemStatus> visibleStatuses = List.of(ItemStatus.ACTIVE, ItemStatus.SOLDOUT);
