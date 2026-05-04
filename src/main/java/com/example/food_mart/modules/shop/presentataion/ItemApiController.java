@@ -6,10 +6,9 @@ import com.example.food_mart.modules.shop.application.ItemService;
 import com.example.food_mart.modules.shop.presentataion.dto.request.ItemCreateDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api")
@@ -36,9 +35,12 @@ public class ItemApiController {
         @param: 이름, 가격, 보관방법, 세부속성, 카테고리
      */
     @Operation(summary = "아이템 등록")
-    @PostMapping("/items")
-    public ApiResponse<Long> registerItem(@RequestBody ItemCreateDTO itemCreateDTO, UserInfo userInfo) {
-        Long registeredItemId = itemService.registerItem(itemCreateDTO, userInfo);
+    @PostMapping(value = "/items", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<Long> registerItem(
+            @RequestPart("item") ItemCreateDTO itemCreateDTO,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            UserInfo userInfo) {
+        Long registeredItemId = itemService.registerItem(itemCreateDTO, image, userInfo);
         return ApiResponse.success(registeredItemId);
     }
 }

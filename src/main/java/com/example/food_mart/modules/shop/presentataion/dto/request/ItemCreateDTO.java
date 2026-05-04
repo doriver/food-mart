@@ -17,6 +17,5 @@ public class ItemCreateDTO {
     private Map<String, Object> attribute;
     private Long categoryId;
     private String description;
-    private String imagePath;
     private ItemStatus status;
 }
