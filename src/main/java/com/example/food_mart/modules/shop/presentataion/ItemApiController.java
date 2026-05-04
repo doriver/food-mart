@@ -4,8 +4,13 @@ import com.example.food_mart.common.ApiResponse;
 import com.example.food_mart.common.argumentResolver.UserInfo;
 import com.example.food_mart.modules.shop.application.ItemService;
 import com.example.food_mart.modules.shop.presentataion.dto.request.ItemCreateDTO;
+import com.example.food_mart.modules.shop.presentataion.dto.response.ItemResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +33,15 @@ public class ItemApiController {
         Long registeredCategoryId
                 = itemService.registerCategory(dto.name(), dto.parentId());
         return ApiResponse.success(registeredCategoryId);
+    }
+
+
+    @Operation(summary = "상품 목록 조회")
+    @GetMapping("/items")
+    public ApiResponse<Page<ItemResponse>> getItemList(
+            @RequestParam(required = false) Long categoryId,
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ApiResponse.success(itemService.getItemList(categoryId, pageable));
     }
 
     /*
