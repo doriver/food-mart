@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.food_mart.modules.order.domain.mapper.OrderItemMapper">
+
+    <select id="sumWeeklyCountByItemId" resultType="WeeklySalesRow">
+        SELECT oi.item_id AS itemId, SUM(oi.count) AS cnt
+        FROM order_item oi
+        WHERE oi.created_at >= #{since}
+          AND oi.order_id IN (
+              SELECT o.id FROM `order` o
+              WHERE o.status IN
+              <foreach item="s" collection="statuses" open="(" separator="," close=")">
+                  #{s}
+              </foreach>
+          )
+        GROUP BY oi.item_id
+    </select>
+
+</mapper>
