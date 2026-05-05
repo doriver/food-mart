@@ -18,24 +18,25 @@ public class ItemSalesCount {
 
     private Long categoryId;
 
+    // totalCount, weeklyCount는 JPA 기본값인 0으로 초기화됨
     private long totalCount;
 
     private long weeklyCount;
 
     private LocalDateTime syncedAt;
 
-    public ItemSalesCount(Long itemId, Long categoryId, long totalCount, long weeklyCount) {
+    public ItemSalesCount(Long itemId, Long categoryId) {
         this.itemId = itemId;
         this.categoryId = categoryId;
-        this.totalCount = totalCount;
+        this.syncedAt = LocalDateTime.now();
+    }
+
+    public void updateWeeklyCount(long weeklyCount) {
         this.weeklyCount = weeklyCount;
         this.syncedAt = LocalDateTime.now();
     }
 
-    public void update(Long categoryId, long totalCount, long weeklyCount) {
-        this.categoryId = categoryId;
-        this.totalCount = totalCount;
-        this.weeklyCount = weeklyCount;
-        this.syncedAt = LocalDateTime.now();
+    public void addTotalCount(long amount) {
+        this.totalCount += amount;
     }
 }

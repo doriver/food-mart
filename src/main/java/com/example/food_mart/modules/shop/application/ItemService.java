@@ -98,6 +98,7 @@ public class ItemService {
         Item item = new Item(itemCreateDTO.getName(), itemCreateDTO.getPrice(), itemCreateDTO.getItemStorage(), itemCreateDTO.getAttribute(), itemCreateDTO.getCategoryId(),
                 itemCreateDTO.getDescription(), imagePath, status);
         Item savedItem = itemRepository.save(item);
+        itemSalesCountRepository.save(new ItemSalesCount(savedItem.getId(), savedItem.getCategoryId()));
         return savedItem.getId();
     }
 
