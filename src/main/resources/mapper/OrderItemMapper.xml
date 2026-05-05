@@ -6,14 +6,12 @@
     <select id="sumWeeklyCountByItemId" resultType="WeeklySalesRow">
         SELECT oi.item_id AS itemId, SUM(oi.count) AS cnt
         FROM order_item oi
+        JOIN `order` o ON o.id = oi.order_id
         WHERE oi.created_at >= #{since}
-          AND oi.order_id IN (
-              SELECT o.id FROM `order` o
-              WHERE o.status IN
-              <foreach item="s" collection="statuses" open="(" separator="," close=")">
-                  #{s}
-              </foreach>
-          )
+          AND o.status IN
+          <foreach item="s" collection="statuses" open="(" separator="," close=")">
+              #{s}
+          </foreach>
         GROUP BY oi.item_id
     </select>
 
