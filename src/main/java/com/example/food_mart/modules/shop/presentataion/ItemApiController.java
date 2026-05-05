@@ -5,6 +5,7 @@ import com.example.food_mart.common.argumentResolver.UserInfo;
 import com.example.food_mart.modules.shop.application.ItemService;
 import com.example.food_mart.modules.shop.presentataion.dto.request.ItemCreateDTO;
 import com.example.food_mart.modules.shop.presentataion.dto.response.ItemResponse;
+import com.example.food_mart.modules.shop.presentataion.dto.response.PopularItemResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,15 @@ public class ItemApiController {
         return ApiResponse.success(registeredCategoryId);
     }
 
+
+    @Operation(summary = "인기상품 조회")
+    @GetMapping("/items/popular")
+    public ApiResponse<Page<PopularItemResponse>> getPopularItems(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false, defaultValue = "ALL") String period,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ApiResponse.success(itemService.getPopularItems(categoryId, period, pageable));
+    }
 
     @Operation(summary = "상품 상세 조회")
     @GetMapping("/items/{itemId}")

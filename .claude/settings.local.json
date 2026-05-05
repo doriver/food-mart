@@ -4,7 +4,9 @@
       "Bash(./gradlew compileJava compileTestJava)",
       "Bash(./gradlew test *)",
       "Bash(xargs grep *)",
-      "Bash(./gradlew compileJava -q)"
+      "Bash(./gradlew compileJava -q)",
+      "Bash(Get-ChildItem -Path \"D:\\\\devJava\\\\food-mart\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ]
   }
 }
