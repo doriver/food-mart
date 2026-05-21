@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.food_mart.modules.warehouse.domain.mapper.ItemStockSummaryMapper">
+
+    <select id="findAllItemStockSummary" resultType="ItemStockSummaryRow">
+        SELECT i.id                                                             AS itemId,
+               i.name                                                           AS itemName,
+               SUM(s.count)                                                     AS totalStock,
+               GROUP_CONCAT(w.name ORDER BY w.name SEPARATOR ', ')              AS warehouses
+        FROM stock s
+                 JOIN item i ON s.item_id = i.id
+                 JOIN warehouse w ON s.warehouse_id = w.id
+        GROUP BY i.id
+        ORDER BY totalStock
+    </select>
+
+</mapper>

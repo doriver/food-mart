@@ -2,14 +2,15 @@ package com.example.food_mart.modules.warehouse.presentation;
 
 import com.example.food_mart.common.ApiResponse;
 import com.example.food_mart.common.argumentResolver.UserInfo;
+import com.example.food_mart.modules.warehouse.application.StockReadService;
 import com.example.food_mart.modules.warehouse.application.StockService;
 import com.example.food_mart.modules.warehouse.domain.entity.WarehousePurpose;
+import com.example.food_mart.modules.warehouse.domain.mapper.ItemStockSummaryRow;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StockController {
 
     private final StockService stockService;
+    private final StockReadService stockReadService;
     /*
         재고 등록
         @param
@@ -28,5 +30,11 @@ public class StockController {
     public ApiResponse<Long> registerStock(@RequestBody StockCreateDTO dto, UserInfo userInfo) {
         Long registeredId = stockService.registerStock(dto.count(), dto.locationType(), dto.itemId(), dto.warehouseId());
         return ApiResponse.success(registeredId);
+    }
+
+    @Operation(summary = "상품별 재고 총합 (창고 통합)")
+    @GetMapping("/stocks/summary")
+    public ApiResponse<List<ItemStockSummaryRow>> getItemStockSummary() {
+        return ApiResponse.success(stockReadService.getItemStockSummary());
     }
 }

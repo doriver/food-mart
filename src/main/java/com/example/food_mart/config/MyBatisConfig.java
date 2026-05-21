@@ -10,7 +10,10 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import javax.sql.DataSource;
 
 @Configuration
-@MapperScan("com.example.food_mart.modules.order.domain.mapper")
+@MapperScan({
+        "com.example.food_mart.modules.order.domain.mapper",
+        "com.example.food_mart.modules.warehouse.domain.mapper"
+})
 public class MyBatisConfig {
     @Bean
     public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
@@ -19,7 +22,10 @@ public class MyBatisConfig {
         factoryBean.setMapperLocations(
                 new PathMatchingResourcePatternResolver().getResources("classpath:mapper/**/*.xml")
         );
-        factoryBean.setTypeAliasesPackage("com.example.food_mart.modules.order.domain.mapper");
+        factoryBean.setTypeAliasesPackage(
+                "com.example.food_mart.modules.order.domain.mapper," +
+                "com.example.food_mart.modules.warehouse.domain.mapper"
+        );
 
         org.apache.ibatis.session.Configuration config = new org.apache.ibatis.session.Configuration();
         config.setMapUnderscoreToCamelCase(true);
