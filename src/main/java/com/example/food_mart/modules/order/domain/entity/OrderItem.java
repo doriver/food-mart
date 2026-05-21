@@ -1,5 +1,6 @@
 package com.example.food_mart.modules.order.domain.entity;
 
+import com.example.food_mart.modules.shop.domain.entity.Item;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -10,8 +11,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_order", columnList = "orderId"),
-        @Index(name = "idx_item", columnList = "itemId")
+        @Index(name = "idx_order", columnList = "order_id"),
+        @Index(name = "idx_item", columnList = "item_id")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,10 +22,17 @@ public class OrderItem {
     private Long id;
 
     @NotNull
-    private Long orderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Order order;
 
     @NotNull
-    private Long itemId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Item item;
+
+    public Long getOrderId() { return order.getId(); }
+    public Long getItemId() { return item.getId(); }
 
     private String name;
 
@@ -35,9 +43,9 @@ public class OrderItem {
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
-    public OrderItem(Long orderId, Long itemId, String name, int count, long totalPrice, LocalDateTime createdAt) {
-        this.orderId = orderId;
-        this.itemId = itemId;
+    public OrderItem(Order order, Item item, String name, int count, long totalPrice, LocalDateTime createdAt) {
+        this.order = order;
+        this.item = item;
         this.name = name;
         this.count = count;
         this.totalPrice = totalPrice;

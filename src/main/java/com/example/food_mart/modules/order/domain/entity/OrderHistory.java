@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_order", columnList = "orderId")
+        @Index(name = "idx_order", columnList = "order_id")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,7 +22,11 @@ public class OrderHistory {
     private Long id;
 
     @NotNull
-    private Long orderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Order order;
+
+    public Long getOrderId() { return order.getId(); }
 
     @Enumerated(EnumType.STRING)
     @NotNull
@@ -43,8 +47,8 @@ public class OrderHistory {
     )
     private LocalDateTime updatedAt;
 
-    public OrderHistory(Long orderId, OrderStatus previousStatus, OrderStatus changedStatus, String reason) {
-        this.orderId = orderId;
+    public OrderHistory(Order order, OrderStatus previousStatus, OrderStatus changedStatus, String reason) {
+        this.order = order;
         this.previousStatus = previousStatus;
         this.changedStatus = changedStatus;
         this.reason = reason;

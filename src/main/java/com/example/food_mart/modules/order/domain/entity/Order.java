@@ -1,5 +1,6 @@
 package com.example.food_mart.modules.order.domain.entity;
 
+import com.example.food_mart.modules.user.domain.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_user", columnList = "userId")
+        @Index(name = "idx_user", columnList = "user_id")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,7 +21,11 @@ public class Order {
     private Long id;
 
     @NotNull
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private User user;
+
+    public Long getUserId() { return user.getId(); }
 
     private String deliveryAddress;
 
@@ -37,8 +42,8 @@ public class Order {
     )
     private LocalDateTime updatedAt;
 
-    public Order(Long userId, String deliveryAddress, OrderStatus status) {
-        this.userId = userId;
+    public Order(User user, String deliveryAddress, OrderStatus status) {
+        this.user = user;
         this.deliveryAddress = deliveryAddress;
         this.status = status;
     }

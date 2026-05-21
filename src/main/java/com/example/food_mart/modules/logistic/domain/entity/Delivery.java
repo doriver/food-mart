@@ -1,5 +1,6 @@
 package com.example.food_mart.modules.logistic.domain.entity;
 
+import com.example.food_mart.modules.order.domain.entity.Order;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

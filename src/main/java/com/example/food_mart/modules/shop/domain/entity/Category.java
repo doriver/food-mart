@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_category", columnList = "parentId")
+        @Index(name = "idx_category", columnList = "parent_id")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,7 +23,13 @@ public class Category {
     @NotBlank
     private String name;
 
-    private Long parentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Category parent;
+
+    public Long getParentId() {
+        return parent != null ? parent.getId() : null;
+    }
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -34,8 +40,8 @@ public class Category {
     )
     private LocalDateTime updatedAt;
 
-    public Category(String name, Long parentId) {
+    public Category(String name, Category parent) {
         this.name = name;
-        this.parentId = parentId;
+        this.parent = parent;
     }
 }

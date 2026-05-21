@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_category", columnList = "categoryId")
+        @Index(name = "idx_category", columnList = "category_id")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,7 +34,13 @@ public class Item {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> attribute;
 
-    private Long categoryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Category category;
+
+    public Long getCategoryId() {
+        return category != null ? category.getId() : null;
+    }
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -54,13 +60,13 @@ public class Item {
     )
     private LocalDateTime updatedAt;
 
-    public Item(String name, int price, ItemStorage itemStorage, Map<String, Object> attribute, Long categoryId,
+    public Item(String name, int price, ItemStorage itemStorage, Map<String, Object> attribute, Category category,
                 String description, String imagePath, ItemStatus status) {
         this.name = name;
         this.price = price;
         this.itemStorage = itemStorage;
         this.attribute = attribute;
-        this.categoryId = categoryId;
+        this.category = category;
         this.description = description;
         this.imagePath = imagePath;
         this.status = status;

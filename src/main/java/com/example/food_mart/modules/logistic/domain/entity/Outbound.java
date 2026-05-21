@@ -1,5 +1,6 @@
 package com.example.food_mart.modules.logistic.domain.entity;
 
+import com.example.food_mart.modules.staff.domain.Staff;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_staff", columnList = "staffId")
+        @Index(name = "idx_staff", columnList = "staff_id")
         , @Index(name = "idx_delivery", columnList = "deliveryId")
 })
 @Getter
@@ -22,7 +23,11 @@ public class Outbound {
     private Long id;
 
     @NotNull
-    private Long staffId; // 출고 처리 담당자(특정 권한 필요)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staff_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Staff staff; // 출고 처리 담당자(특정 권한 필요)
+
+    public Long getStaffId() { return staff.getId(); }
 
     @NotNull
     private Long deliveryId;
@@ -40,8 +45,8 @@ public class Outbound {
     )
     private LocalDateTime updatedAt;
 
-    public Outbound(Long staffId, Long deliveryId, OutboundStatus outboundStatus) {
-        this.staffId = staffId;
+    public Outbound(Staff staff, Long deliveryId, OutboundStatus outboundStatus) {
+        this.staff = staff;
         this.deliveryId = deliveryId;
         this.outboundStatus = outboundStatus;
     }
@@ -50,8 +55,8 @@ public class Outbound {
         this.outboundStatus = outboundStatus;
     }
 
-    public void completeBy(Long staffId) {
+    public void completeBy(Staff staff) {
         this.outboundStatus = OutboundStatus.COMPLETED;
-        this.staffId = staffId;
+        this.staff = staff;
     }
 }

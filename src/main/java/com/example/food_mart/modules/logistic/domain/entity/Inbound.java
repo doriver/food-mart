@@ -1,5 +1,6 @@
 package com.example.food_mart.modules.logistic.domain.entity;
 
+import com.example.food_mart.modules.staff.domain.Staff;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_staff", columnList = "staffId")
+        @Index(name = "idx_staff", columnList = "staff_id")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,7 +22,11 @@ public class Inbound {
     private Long id;
 
     @NotNull
-    private Long staffId; // 담당자
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staff_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Staff staff; // 담당자
+
+    public Long getStaffId() { return staff.getId(); }
 
     @NotBlank
     private String supplier; // 공급업체
@@ -35,8 +40,8 @@ public class Inbound {
     )
     private LocalDateTime updatedAt;
 
-    public Inbound(Long staffId, String supplier) {
-        this.staffId = staffId;
+    public Inbound(Staff staff, String supplier) {
+        this.staff = staff;
         this.supplier = supplier;
     }
 }

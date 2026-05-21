@@ -1,5 +1,6 @@
 package com.example.food_mart.modules.shop.domain.entity;
 
+import com.example.food_mart.modules.user.domain.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -13,8 +14,8 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_user", columnList = "userId"),
-        @Index(name = "idx_item", columnList = "itemId")
+        @Index(name = "idx_user", columnList = "user_id"),
+        @Index(name = "idx_item", columnList = "item_id")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,10 +25,17 @@ public class ItemInCart {
     private Long id;
 
     @NotNull
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private User user;
 
     @NotNull
-    private Long itemId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Item item;
+
+    public Long getUserId() { return user.getId(); }
+    public Long getItemId() { return item.getId(); }
 
     private String name;
 
@@ -38,9 +46,9 @@ public class ItemInCart {
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public ItemInCart(Long userId, Long itemId, String name, int count, long totalPrice) {
-        this.userId = userId;
-        this.itemId = itemId;
+    public ItemInCart(User user, Item item, String name, int count, long totalPrice) {
+        this.user = user;
+        this.item = item;
         this.name = name;
         this.count = count;
         this.totalPrice = totalPrice;

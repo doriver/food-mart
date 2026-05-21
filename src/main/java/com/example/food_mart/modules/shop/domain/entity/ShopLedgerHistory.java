@@ -1,5 +1,6 @@
 package com.example.food_mart.modules.shop.domain.entity;
 
+import com.example.food_mart.modules.user.domain.Wallet;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_wallet", columnList = "walletId")
+        @Index(name = "idx_wallet", columnList = "wallet_id")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,7 +21,11 @@ public class ShopLedgerHistory {
     private Long id;
 
     @NotNull
-    private Long walletId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "wallet_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Wallet wallet;
+
+    public Long getWalletId() { return wallet.getId(); }
 
     @Enumerated(EnumType.ORDINAL)
     @NotNull
@@ -31,8 +36,8 @@ public class ShopLedgerHistory {
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
-    public ShopLedgerHistory(Long walletId, ShopTransaction shopTransaction, long amount, LocalDateTime createdAt) {
-        this.walletId = walletId;
+    public ShopLedgerHistory(Wallet wallet, ShopTransaction shopTransaction, long amount, LocalDateTime createdAt) {
+        this.wallet = wallet;
         this.shopTransaction = shopTransaction;
         this.amount = amount;
         this.createdAt = createdAt;

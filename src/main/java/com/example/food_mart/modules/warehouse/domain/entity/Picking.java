@@ -1,5 +1,7 @@
 package com.example.food_mart.modules.warehouse.domain.entity;
 
+import com.example.food_mart.modules.order.domain.entity.Order;
+import com.example.food_mart.modules.staff.domain.Staff;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -10,9 +12,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_staff", columnList = "staffId")
-        , @Index(name = "idx_order", columnList = "orderId")
-        , @Index(name = "idx_stock", columnList = "stockId")
+        @Index(name = "idx_staff", columnList = "staff_id")
+        , @Index(name = "idx_order", columnList = "order_id")
+        , @Index(name = "idx_stock", columnList = "stock_id")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,13 +24,23 @@ public class Picking {
     private Long id;
 
     @NotNull
-    private Long orderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Order order;
 
     @NotNull
-    private Long staffId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staff_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Staff staff;
 
     @NotNull
-    private Long stockId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stock_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Stock stock;
+
+    public Long getOrderId() { return order.getId(); }
+    public Long getStaffId() { return staff.getId(); }
+    public Long getStockId() { return stock.getId(); }
 
     private long count;
 
@@ -45,16 +57,16 @@ public class Picking {
     )
     private LocalDateTime updatedAt;
 
-    public Picking(Long orderId, Long stockId, long count, PickingStatus pickingStatus, Long staffId) {
-        this.orderId = orderId;
-        this.stockId = stockId;
+    public Picking(Order order, Stock stock, long count, PickingStatus pickingStatus, Staff staff) {
+        this.order = order;
+        this.stock = stock;
         this.count = count;
         this.pickingStatus = pickingStatus;
-        this.staffId = staffId;
+        this.staff = staff;
     }
 
-    public void completeBy(Long staffId) {
+    public void completeBy(Staff staff) {
         this.pickingStatus = PickingStatus.COMPLETED;
-        this.staffId = staffId;
+        this.staff = staff;
     }
 }

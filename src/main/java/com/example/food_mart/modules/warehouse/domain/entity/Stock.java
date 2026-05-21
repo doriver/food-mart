@@ -1,6 +1,7 @@
 package com.example.food_mart.modules.warehouse.domain.entity;
 
 import com.example.food_mart.common.exception.Expected4xxException;
+import com.example.food_mart.modules.shop.domain.entity.Item;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -11,8 +12,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_warehouse", columnList = "warehouseId"),
-        @Index(name = "idx_item", columnList = "itemId")
+        @Index(name = "idx_warehouse", columnList = "warehouse_id"),
+        @Index(name = "idx_item", columnList = "item_id")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,10 +28,17 @@ public class Stock {
     private WarehousePurpose locationType;
 
     @NotNull
-    private Long itemId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Item item;
 
     @NotNull
-    private Long warehouseId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "warehouse_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Warehouse warehouse;
+
+    public Long getItemId() { return item.getId(); }
+    public Long getWarehouseId() { return warehouse.getId(); }
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -41,11 +49,11 @@ public class Stock {
     )
     private LocalDateTime updatedAt;
 
-    public Stock(Long count, WarehousePurpose locationType, Long itemId, Long warehouseId) {
+    public Stock(Long count, WarehousePurpose locationType, Item item, Warehouse warehouse) {
         this.count = count;
         this.locationType = locationType;
-        this.itemId = itemId;
-        this.warehouseId = warehouseId;
+        this.item = item;
+        this.warehouse = warehouse;
     }
 
     // 일반적인 개수 감소는 아님, 주문에서 사용되는 개수 감소

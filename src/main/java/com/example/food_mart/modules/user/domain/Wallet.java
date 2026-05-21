@@ -23,6 +23,7 @@ public class Wallet {
     private Long id;
 
     @NotNull
+    @Column(unique = true)
     private Long userId;
 
     private long money;
