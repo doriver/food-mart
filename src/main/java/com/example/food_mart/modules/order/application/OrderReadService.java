@@ -7,6 +7,8 @@ import com.example.food_mart.modules.logistic.domain.entity.Delivery;
 import com.example.food_mart.modules.order.domain.entity.Order;
 import com.example.food_mart.modules.order.domain.entity.OrderItem;
 import com.example.food_mart.modules.logistic.domain.repository.DeliveryRepository;
+import com.example.food_mart.modules.order.domain.mapper.OrderFlowMapper;
+import com.example.food_mart.modules.order.domain.mapper.OrderFlowRow;
 import com.example.food_mart.modules.order.domain.repository.OrderItemRepository;
 import com.example.food_mart.modules.order.domain.repository.OrderRepository;
 import com.example.food_mart.modules.order.presentation.dto.response.OrderDetailDTO;
@@ -24,6 +26,7 @@ public class OrderReadService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final DeliveryRepository deliveryRepository;
+    private final OrderFlowMapper orderFlowMapper;
 
     /*
         특정 사용자의 주문목록
@@ -62,5 +65,13 @@ public class OrderReadService {
 //        OrderDetailDTO orderDetailDTO = new OrderDetailDTO(order.getStatus(), order.getCreatedAt(), orderedItemList, delivery.getAddress(), delivery.getStatus());
 //        orderDetailDTO.calculateAndSetTotalPrice();
         return null;
+    }
+
+    public OrderFlowRow readOrderFlow(Long orderId) {
+        OrderFlowRow flow = orderFlowMapper.findOrderFlow(orderId);
+        if (flow == null || flow.orderId() == null) {
+            throw new Expected4xxException(ErrorCode.NOT_FOUND_ORDER);
+        }
+        return flow;
     }
 }

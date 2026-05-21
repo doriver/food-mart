@@ -8,7 +8,8 @@
       "Bash(Get-ChildItem -Path \"D:\\\\devJava\\\\food-mart\" -Recurse -Directory)",
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(type \"D:\\\\devJava\\\\food-mart\\\\src\\\\main\\\\resources\\\\application.properties\")",
-      "Bash(type \"D:\\\\devJava\\\\food-mart\\\\src\\\\main\\\\resources\\\\application.yml\")"
+      "Bash(type \"D:\\\\devJava\\\\food-mart\\\\src\\\\main\\\\resources\\\\application.yml\")",
+      "Bash(./gradlew build *)"
     ]
   }
 }

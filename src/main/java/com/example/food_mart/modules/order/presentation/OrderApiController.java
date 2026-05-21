@@ -4,6 +4,7 @@ import com.example.food_mart.common.ApiResponse;
 import com.example.food_mart.common.argumentResolver.UserInfo;
 import com.example.food_mart.modules.order.application.OrderReadService;
 import com.example.food_mart.modules.order.application.OrderService;
+import com.example.food_mart.modules.order.domain.mapper.OrderFlowRow;
 import com.example.food_mart.modules.order.presentation.dto.request.OrderCancelDTO;
 import com.example.food_mart.modules.order.presentation.dto.request.OrderCreateDTO;
 import com.example.food_mart.modules.order.presentation.dto.response.OrderDetailDTO;
@@ -68,5 +69,11 @@ public class OrderApiController {
     public ApiResponse<OrderDetailDTO> readOrderDetail(@PathVariable("id") Long orderId, UserInfo userInfo) {
         OrderDetailDTO orderDetailDTO = orderReadService.readOrderDetail(userInfo.getUserId(), orderId);
         return ApiResponse.success(orderDetailDTO);
+    }
+
+    @Operation(summary = "주문 흐름 추적 (주문 → 피킹 → 출고 → 배송)")
+    @GetMapping("/{id}/flow")
+    public ApiResponse<OrderFlowRow> readOrderFlow(@PathVariable("id") Long orderId) {
+        return ApiResponse.success(orderReadService.readOrderFlow(orderId));
     }
 }

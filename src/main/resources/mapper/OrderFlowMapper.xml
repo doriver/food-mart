@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.food_mart.modules.order.domain.mapper.OrderFlowMapper">
+
+    <select id="findOrderFlow" resultType="OrderFlowRow">
+        SELECT o.id                                                                  AS orderId,
+               o.status                                                              AS orderStatus,
+               p.total_picking                                                       AS totalPicking,
+               p.completed_picking                                                   AS completedPicking,
+               ob.outbound_status                                                    AS outboundStatus,
+               d.delivery_company                                                    AS deliveryCompany,
+               d.tracking_code                                                       AS trackingCode
+        FROM `order` o
+                 LEFT JOIN (SELECT order_id,
+                                   COUNT(*)                                                           AS total_picking,
+                                   SUM(CASE WHEN picking_status = 'COMPLETED' THEN 1 ELSE 0 END) AS completed_picking
+                            FROM picking
+                            GROUP BY order_id) p ON p.order_id = o.id
+                 LEFT JOIN delivery d ON d.order_id = o.id
+                 LEFT JOIN outbound ob ON ob.delivery_id = d.id
+        WHERE o.id = #{orderId}
+    </select>
+
+</mapper>

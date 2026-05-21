@@ -1,7 +1,3 @@
-mybatis:
-  mapper-locations: classpath:mapper/**/*.xml
-  type-aliases-package: com.example.food_mart.modules.order.domain.mapper
-
 file:
   upload-dir: uploads/items
 

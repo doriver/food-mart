@@ -1,5 +1,5 @@
-# 창고형 식자재 마트
-* [재고관리+주문 시스템] 의 구현을 목표 
+# 이커머스 물류
+* '입고 ~ 재고 ~ 주문 ~ 출고' 전반을 다룬다. 
 * 이전에 작업했던 주문API를 이식하고, 시스템으로 확장
   * https://github.com/doriver/mini
 * 기술스택 : SpringBoot, MySQL
@@ -17,46 +17,7 @@
 * JPA 연관관계는 @ManyToOne(fetch = FetchType.LAZY) 만 사용한다.
 </details>
 
-
-### 주문 (결제까지 하는경우)
-<details>
-  <summary>프로세스</summary>
-  <div>
-    <ol>
-      <li> 고객이 주문
-      </li>
-      <li> 장바구니 아이템들 구매가능한지 판단(돈, 재고)   
-      </li>
-      <li> 주문, 주문 아이템들 생성
-      </li>
-      <li> 결제(돈 차감, 마트 장부 기록)
-      </li>
-      <li> 배송 대기상태로(재고 차감, 오더피킹 생성)
-      </li>
-      <li> (창고직원이 재고 피킹 예정)
-      </li>
-    </ol>
-  </div>
-</details>
-<details>
-  <summary>최종 데이터 변화</summary>
-  <div>
-    <ol>
-      <li> Order, OrderItem 생성
-      </li>
-      <li> ItemInCart 삭제
-      </li>
-      <li> Wallet에서 돈 차감, ShopLedgerHistory (입금)생성    
-      </li>
-      <li> Order 상태 업데이트
-      </li>
-      <li> Stock에서 개수 차감,  Picking 생성
-      </li>
-    </ol>
-  </div>
-</details>
-
-주문기능 : [OrderService.java](https://github.com/doriver/food-mart/blob/47321633b10422cabf2a50dc6e70fb6e5a63da7b/src/main/java/com/example/food_mart/modules/order/application/OrderService.java#L27)
+## 주요 기능들
 
 ### 입고
 
@@ -114,4 +75,98 @@
   </div>
 </details>
 
+### 주문 (결제까지 하는경우)
+<details>
+  <summary>프로세스</summary>
+  <div>
+    <ol>
+      <li> 고객이 주문
+      </li>
+      <li> 장바구니 아이템들 구매가능한지 판단(돈, 재고)   
+      </li>
+      <li> 주문, 주문 아이템들 생성
+      </li>
+      <li> 결제(돈 차감, 마트 장부 기록)
+      </li>
+      <li> 배송 대기상태로(재고 차감, 오더피킹 생성)
+      </li>
+      <li> (창고직원이 재고 피킹 예정)
+      </li>
+    </ol>
+  </div>
+</details>
+<details>
+  <summary>최종 데이터 변화</summary>
+  <div>
+    <ol>
+      <li> Order, OrderItem 생성
+      </li>
+      <li> ItemInCart 삭제
+      </li>
+      <li> Wallet에서 돈 차감, ShopLedgerHistory (입금)생성    
+      </li>
+      <li> Order 상태 업데이트
+      </li>
+      <li> Stock에서 개수 차감,  Picking 생성
+      </li>
+    </ol>
+  </div>
+</details>
+
+주문기능 : [OrderService.java](https://github.com/doriver/food-mart/blob/47321633b10422cabf2a50dc6e70fb6e5a63da7b/src/main/java/com/example/food_mart/modules/order/application/OrderService.java#L27)
+
+#### 주문된 상품들 피킹
+
+<details>
+  <summary>프로세스</summary>
+  <div>
+    <ol>
+      <li> (오더피킹 생성에서 주문 아이템이 재고에 매핑 된다)
+      </li>
+      <li> (직원이 피킹 목록을 조회하고, 대기중인 피킹들에 대해 작업한다)
+      </li>
+      <li> (창고에 있는 재고를 출고장소로 옮긴뒤) 피킹 완료 요청을 한다.
+      </li>
+    </ol>
+  </div>
+</details>
+<details>
+  <summary>최종 데이터 변화</summary>
+  <div>
+    <ol>
+      <li> Picking 상태와 담당직원 업데이트
+      </li>
+    </ol>
+  </div>
+</details>
+
 ### 출고
+
+<details>
+  <summary>프로세스</summary>
+  <div>
+    <ol>
+      <li> (직원이 출고처리 하는 장소에서, 주문에 해당하는 상품들이 다 있는지 확인)
+      </li>
+      <li> 주문의 도착지, 배송회사 등등 입력해서 출고등록 요청
+      </li>
+      <li> (출고 등록 완료됨) 
+      </li>
+      <li> 배송 회사가 물건 가지고가는거 확인하고, 출고 완료요청
+      </li>
+    </ol>
+  </div>
+</details>
+<details>
+  <summary>최종 데이터 변화</summary>
+  <div>
+    <ol>
+      <li> Delivery 생성
+      </li>
+      <li> Outbound 생성
+      </li>
+      <li> Outbound 상태와 담당직원 업데이트
+      </li>
+    </ol>
+  </div>
+</details>
