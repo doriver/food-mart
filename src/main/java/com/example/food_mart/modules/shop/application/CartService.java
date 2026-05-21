@@ -6,6 +6,8 @@ import com.example.food_mart.common.utils.MoneyCalculation;
 import com.example.food_mart.modules.shop.domain.Cart;
 import com.example.food_mart.modules.shop.domain.entity.Item;
 import com.example.food_mart.modules.shop.domain.entity.ItemInCart;
+import com.example.food_mart.modules.user.domain.User;
+import com.example.food_mart.modules.user.domain.UserRepository;
 import com.example.food_mart.modules.shop.domain.repository.ItemInCartRepository;
 import com.example.food_mart.modules.shop.domain.repository.ItemRepository;
 import com.example.food_mart.modules.shop.presentataion.dto.request.ItemInCartCreateDTO;
@@ -24,6 +26,7 @@ public class CartService {
 
     private final ItemInCartRepository itemInCartRepository;
     private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
     private final StockService stockService;
 
     /*
@@ -56,7 +59,8 @@ public class CartService {
         long totalPrice = MoneyCalculation.priceCount(item.getPrice(), itemCount);
 
         // ItemInCart저장
-        ItemInCart itemInCart = new ItemInCart(userId, itemId, item.getName(), itemCount, totalPrice);
+        User user = userRepository.getReferenceById(userId);
+        ItemInCart itemInCart = new ItemInCart(user, item, item.getName(), itemCount, totalPrice);
         ItemInCart savedItemInCart = itemInCartRepository.save(itemInCart);
         return savedItemInCart.getId();
     }

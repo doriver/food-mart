@@ -34,7 +34,7 @@ public class LedgerPaymentService implements PaymentService {
                 .orElseThrow(() -> new Expected4xxException(ErrorCode.WALLET_NOT_FOUND));
         wallet.minusMoney(totalPrice);
 
-        ShopLedgerHistory shopLedgerHistory = new ShopLedgerHistory(wallet.getId(), ShopTransaction.PAY, totalPrice, LocalDateTime.now());
+        ShopLedgerHistory shopLedgerHistory = new ShopLedgerHistory(wallet, ShopTransaction.PAY, totalPrice, LocalDateTime.now());
 
         try {
             walletRepository.save(wallet);
@@ -57,7 +57,7 @@ public class LedgerPaymentService implements PaymentService {
                 .orElseThrow(() -> new Expected4xxException(ErrorCode.WALLET_NOT_FOUND));
         wallet.plusMoney(totalPrice);
 
-        ShopLedgerHistory shopLedgerHistory = new ShopLedgerHistory(wallet.getId(), ShopTransaction.REFUND, totalPrice, LocalDateTime.now());
+        ShopLedgerHistory shopLedgerHistory = new ShopLedgerHistory(wallet, ShopTransaction.REFUND, totalPrice, LocalDateTime.now());
 
         try {
             walletRepository.save(wallet);

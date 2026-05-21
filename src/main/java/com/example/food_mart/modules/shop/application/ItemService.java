@@ -39,7 +39,8 @@ public class ItemService {
         카테고리 등록
      */
     public Long registerCategory(String name, Long parentId) {
-        Category category = new Category(name, parentId);
+        Category parent = parentId != null ? categoryRepository.getReferenceById(parentId) : null;
+        Category category = new Category(name, parent);
         Category savedCategory = categoryRepository.save(category);
         return savedCategory.getId();
     }
@@ -95,10 +96,11 @@ public class ItemService {
 //        UserUtils.checkManagerAdmin(userInfo.getRole());
         String imagePath = (image != null && !image.isEmpty()) ? fileStorageService.store(image) : null;
         ItemStatus status = itemCreateDTO.getStatus() != null ? itemCreateDTO.getStatus() : ItemStatus.ACTIVE;
-        Item item = new Item(itemCreateDTO.getName(), itemCreateDTO.getPrice(), itemCreateDTO.getItemStorage(), itemCreateDTO.getAttribute(), itemCreateDTO.getCategoryId(),
+        Category category = categoryRepository.getReferenceById(itemCreateDTO.getCategoryId());
+        Item item = new Item(itemCreateDTO.getName(), itemCreateDTO.getPrice(), itemCreateDTO.getItemStorage(), itemCreateDTO.getAttribute(), category,
                 itemCreateDTO.getDescription(), imagePath, status);
         Item savedItem = itemRepository.save(item);
-        itemSalesCountRepository.save(new ItemSalesCount(savedItem.getId(), savedItem.getCategoryId()));
+        itemSalesCountRepository.save(new ItemSalesCount(savedItem.getId(), savedItem.getCategory()));
         return savedItem.getId();
     }
 

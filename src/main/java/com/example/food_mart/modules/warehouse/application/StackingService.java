@@ -4,6 +4,8 @@ import com.example.food_mart.common.exception.Expected4xxException;
 import com.example.food_mart.modules.logistic.domain.entity.InboundItem;
 import com.example.food_mart.modules.logistic.domain.entity.InboundStackingStatus;
 import com.example.food_mart.modules.logistic.domain.repository.InboundItemRepository;
+import com.example.food_mart.modules.staff.domain.Staff;
+import com.example.food_mart.modules.staff.domain.StaffRepository;
 import com.example.food_mart.modules.warehouse.domain.entity.Stock;
 import com.example.food_mart.modules.warehouse.domain.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +22,14 @@ public class StackingService {
 
     private final InboundItemRepository inboundItemRepository;
     private final StockRepository stockRepository;
+    private final StaffRepository staffRepository;
 
     @Transactional
     public void doCompleteStacking(Long inboundItemId, Long stackingStaffId, Map<Long,Long> stockAndCount) {
         InboundItem inboundItem = inboundItemRepository.findById(inboundItemId)
                 .orElseThrow(() -> new Expected4xxException("해당 입고아이템은 없습니다."));
-        inboundItem.updateStackingStaffId(stackingStaffId);
+        Staff staff = staffRepository.getReferenceById(stackingStaffId);
+        inboundItem.updateStackingStaff(staff);
 
         List<Stock> stockList = new ArrayList<>();
         Stock changedStock = null;

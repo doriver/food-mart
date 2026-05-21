@@ -8,6 +8,8 @@ import com.example.food_mart.modules.logistic.domain.entity.Outbound;
 import com.example.food_mart.modules.logistic.domain.entity.OutboundStatus;
 import com.example.food_mart.modules.logistic.domain.repository.DeliveryRepository;
 import com.example.food_mart.modules.logistic.domain.repository.OutboundRepository;
+import com.example.food_mart.modules.staff.domain.Staff;
+import com.example.food_mart.modules.staff.domain.StaffRepository;
 import com.example.food_mart.modules.warehouse.domain.entity.Picking;
 import com.example.food_mart.modules.warehouse.domain.entity.PickingStatus;
 import com.example.food_mart.modules.warehouse.domain.repository.PickingRepository;
@@ -24,6 +26,7 @@ public class OutboundService {
     private final DeliveryRepository deliveryRepository;
     private final OutboundRepository outboundRepository;
     private final PickingRepository pickingRepository;
+    private final StaffRepository staffRepository;
 
     @Transactional
     public Long registerOutbound(Long orderId, String address, DeliveryCompany deliveryCompany, String trackingCode, Long staffId) {
@@ -37,7 +40,8 @@ public class OutboundService {
         }
 
         Delivery delivery = deliveryRepository.save(new Delivery(orderId, address, deliveryCompany, trackingCode));
-        Outbound outbound = outboundRepository.save(new Outbound(staffId, delivery.getId(), OutboundStatus.READY));
+        Staff staff = staffRepository.getReferenceById(staffId);
+        Outbound outbound = outboundRepository.save(new Outbound(staff, delivery.getId(), OutboundStatus.READY));
         return outbound.getId();
     }
 
@@ -50,7 +54,7 @@ public class OutboundService {
             throw new Expected4xxException(ErrorCode.NOT_READY_OUTBOUND);
         }
 
-        outbound.completeBy(staffId);
+        outbound.completeBy(staffRepository.getReferenceById(staffId));
         return outbound.getId();
     }
 

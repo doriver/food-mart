@@ -5,6 +5,8 @@ import com.example.food_mart.common.exception.Expected5xxException;
 import com.example.food_mart.modules.logistic.application.OutboundService;
 import com.example.food_mart.modules.order.application.inteface.PaymentService;
 import com.example.food_mart.modules.order.domain.entity.Order;
+import com.example.food_mart.modules.user.domain.User;
+import com.example.food_mart.modules.user.domain.UserRepository;
 import com.example.food_mart.modules.order.domain.entity.OrderHistory;
 import com.example.food_mart.modules.order.domain.entity.OrderItem;
 import com.example.food_mart.modules.order.domain.entity.OrderStatus;
@@ -28,6 +30,7 @@ public class TransactionService {
     private final StockService stockService;
     private final OutboundService outboundService;
 
+    private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderHistoryRepository orderHistoryRepository;
@@ -36,7 +39,8 @@ public class TransactionService {
     @Transactional
     public Order order(Long userId, String deliveryAddress, Cart cart) {
         // Order생성
-        Order order = new Order(userId, deliveryAddress, OrderStatus.REGISTER);
+        User user = userRepository.getReferenceById(userId);
+        Order order = new Order(user, deliveryAddress, OrderStatus.REGISTER);
 
         Order savedOrder = null;
         try {
@@ -102,7 +106,7 @@ public class TransactionService {
 
         // 주문 이력 기록
         OrderHistory orderHistory = new OrderHistory(
-                order.getId(), previousStatus, OrderStatus.CANCEL, reason);
+                order, previousStatus, OrderStatus.CANCEL, reason);
         orderHistoryRepository.save(orderHistory);
     }
 }

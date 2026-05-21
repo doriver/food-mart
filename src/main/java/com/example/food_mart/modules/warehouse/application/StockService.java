@@ -7,9 +7,14 @@ import com.example.food_mart.modules.shop.domain.entity.Item;
 import com.example.food_mart.modules.shop.domain.entity.ItemStorage;
 import com.example.food_mart.modules.shop.domain.repository.ItemRepository;
 import com.example.food_mart.modules.staff.application.StaffConstants;
+import com.example.food_mart.modules.order.domain.entity.Order;
+import com.example.food_mart.modules.order.domain.repository.OrderRepository;
+import com.example.food_mart.modules.staff.domain.Staff;
+import com.example.food_mart.modules.staff.domain.StaffRepository;
 import com.example.food_mart.modules.warehouse.domain.entity.*;
 import com.example.food_mart.modules.warehouse.domain.repository.PickingRepository;
 import com.example.food_mart.modules.warehouse.domain.repository.StockRepository;
+import com.example.food_mart.modules.warehouse.domain.repository.WarehouseRepository;
 import com.example.food_mart.modules.warehouse.domain.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,13 +27,17 @@ import java.util.*;
 public class StockService {
 
     private final ItemRepository itemRepository;
+    private final WarehouseRepository warehouseRepository;
+    private final OrderRepository orderRepository;
+    private final StaffRepository staffRepository;
     private final PickingRepository pickingRepository;
     private final StockRepository stockRepository;
 
     // 재고 등록
     public Long registerStock(Long count, WarehousePurpose locationType, Long itemId, Long warehouseId) {
-        Stock saved = stockRepository.save(
-                new Stock(count, locationType, itemId, warehouseId));
+        Item item = itemRepository.getReferenceById(itemId);
+        Warehouse warehouse = warehouseRepository.getReferenceById(warehouseId);
+        Stock saved = stockRepository.save(new Stock(count, locationType, item, warehouse));
         return saved.getId();
     }
 
@@ -63,6 +72,9 @@ public class StockService {
         List<Stock> changedStockList = new ArrayList<>();
         List<Picking> pickingList = new ArrayList<>();
 
+        Order orderRef = orderRepository.getReferenceById(orderId);
+        Staff staffRef = staffRepository.getReferenceById(StaffConstants.pickingMaster);
+
         for (Long itemId : itemAndCount.keySet()) {
         // 1. 각 아이템 재고찾기
             Item item = itemRepository.findById(itemId)
@@ -85,9 +97,7 @@ public class StockService {
                 changedStockList.add(lockedStock);
 
                 // 오더 피킹
-                pickingList.add(
-                  new Picking(orderId, lockedStock.getId(), pickingCount, PickingStatus.READY, StaffConstants.pickingMaster)
-                );
+                pickingList.add(new Picking(orderRef, lockedStock, pickingCount, PickingStatus.READY, staffRef));
 
                 if (remainOrderItem == 0) {
                     break;

@@ -7,6 +7,17 @@
 
 해당 README는 작성중(미완성)입니다.
 
+<details>
+<summary><h2>DB 관련 정책</h2></summary>
+
+(예외상황 있을수 있음)
+* FK 사용x , 참조필드에 index를 사용한다.
+* JPA를 기본으로 하되    
+  동적쿼리, 복잡한 쿼리등은 MyBatis를 이용한다.
+* JPA 연관관계는 @ManyToOne(fetch = FetchType.LAZY) 만 사용한다.
+</details>
+
+
 ### 주문 (결제까지 하는경우)
 <details>
   <summary>프로세스</summary>

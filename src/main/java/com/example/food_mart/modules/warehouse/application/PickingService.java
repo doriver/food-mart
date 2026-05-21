@@ -2,6 +2,8 @@ package com.example.food_mart.modules.warehouse.application;
 
 import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
+import com.example.food_mart.modules.staff.domain.Staff;
+import com.example.food_mart.modules.staff.domain.StaffRepository;
 import com.example.food_mart.modules.warehouse.domain.entity.Picking;
 import com.example.food_mart.modules.warehouse.domain.entity.PickingStatus;
 import com.example.food_mart.modules.warehouse.domain.repository.PickingRepository;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PickingService {
 
     private final PickingRepository pickingRepository;
+    private final StaffRepository staffRepository;
 
     @Transactional
     public Long completePicking(Long pickingId, Long staffId) {
@@ -24,7 +27,8 @@ public class PickingService {
             throw new Expected4xxException(ErrorCode.ALREADY_COMPLETED_PICKING);
         }
 
-        picking.completeBy(staffId); // dirty checking 으로 update
+        Staff staff = staffRepository.getReferenceById(staffId);
+        picking.completeBy(staff); // dirty checking 으로 update
         return picking.getId();
     }
 }

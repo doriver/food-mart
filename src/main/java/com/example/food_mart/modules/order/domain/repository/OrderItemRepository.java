@@ -12,6 +12,6 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 
     List<OrderItem> findAllByOrderId(Long orderId);
 
-    @Query("SELECT oi.itemId, SUM(oi.count) FROM OrderItem oi WHERE oi.createdAt >= :since GROUP BY oi.itemId")
+    @Query("SELECT oi.item.id, SUM(oi.count) FROM OrderItem oi WHERE oi.createdAt >= :since GROUP BY oi.item.id")
     List<Object[]> sumWeeklyCountByItemId(@Param("since") LocalDateTime since);
 }
