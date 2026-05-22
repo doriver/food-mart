@@ -1,14 +1,30 @@
 # 이커머스 물류
 * '입고 ~ 재고 ~ 주문 ~ 출고' 전반을 다룬다. 
-* 이전에 작업했던 주문API를 이식하고, 시스템으로 확장
-  * https://github.com/doriver/mini
 * 기술스택 : SpringBoot, MySQL
 * 외부 연동없이, DB안에서 모든 흐름이 닫히도록 설계
 
 해당 README는 작성중(미완성)입니다.
 
 <details>
-<summary><h2>DB 관련 정책</h2></summary>
+<summary><h3>소프트웨어 아키텍처</h3></summary>
+
+<img width="300" height="300" alt="image" src="img/architech.png" />
+
+</details>
+
+<details>
+<summary><h3>Rest API 응답 설계</h3></summary>
+
+'HTTP 상태코드' 에 따른 응답
+* 2xx은 @controller에서
+* 4xx, 5xx 은 @ExceptionHandler 쪽에서
+  * 커스텀한 Expected4xxException, Expected5xxException를 api로직에서 throw함
+* 응답형식은 ApiResponse클래스로 일괄 처리
+  * 정적 팩토리 메서드(Static Factory Method)패턴을 사용
+</details>
+
+<details>
+<summary><h3>DB 관련 정책</h3></summary>
 
 (예외상황 있을수 있음)
 * FK 사용x , 참조필드에 index를 사용한다.
@@ -17,7 +33,8 @@
 * JPA 연관관계는 @ManyToOne(fetch = FetchType.LAZY) 만 사용한다.
 </details>
 
-## 주요 기능들
+
+## 🎥 주요 기능들
 
 ### 입고
 
