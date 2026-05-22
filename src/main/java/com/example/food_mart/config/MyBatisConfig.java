@@ -12,7 +12,8 @@ import javax.sql.DataSource;
 @Configuration
 @MapperScan({
         "com.example.food_mart.modules.order.domain.mapper",
-        "com.example.food_mart.modules.warehouse.domain.mapper"
+        "com.example.food_mart.modules.warehouse.domain.mapper",
+        "com.example.food_mart.modules.logistic.domain.mapper"
 })
 public class MyBatisConfig {
     @Bean
@@ -24,7 +25,8 @@ public class MyBatisConfig {
         );
         factoryBean.setTypeAliasesPackage(
                 "com.example.food_mart.modules.order.domain.mapper," +
-                "com.example.food_mart.modules.warehouse.domain.mapper"
+                "com.example.food_mart.modules.warehouse.domain.mapper," +
+                "com.example.food_mart.modules.logistic.domain.mapper"
         );
 
         org.apache.ibatis.session.Configuration config = new org.apache.ibatis.session.Configuration();

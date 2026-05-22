@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.food_mart.modules.logistic.domain.mapper.OutboundDelayMapper">
+
+    <select id="findOutboundDelays" resultType="OutboundDelayRow">
+        SELECT o.id                                             AS orderId,
+               o.created_at                                     AS orderedAt,
+               u.name                                           AS customer,
+               d.delivery_company                               AS deliveryCompany,
+               ob.outbound_status                               AS outboundStatus,
+               TIMESTAMPDIFF(HOUR, o.created_at, NOW())         AS hoursElapsed
+        FROM `order` o
+                 JOIN user u      ON u.id = o.user_id
+                 JOIN delivery d  ON d.order_id = o.id
+                 JOIN outbound ob ON ob.delivery_id = d.id
+        WHERE o.status = 'PAID'
+          AND o.created_at &lt; DATE_SUB(NOW(), INTERVAL 2 DAY)
+          AND ob.outbound_status != 'COMPLETED'
+        ORDER BY hoursElapsed DESC
+    </select>
+
+</mapper>

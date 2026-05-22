@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-물류 이커머스 - 재고관리 + 주문 시스템 + 입출고 . Spring Boot 4.0.2 / Java 17 / MySQL / Gradle project.
+이커머스 물류 - 재고관리 + 주문 시스템 + 입출고 . Spring Boot 4.0.2 / Java 17 / MySQL / Gradle project.
 
 ## Build & Test Commands
 
