@@ -7,10 +7,7 @@ import com.example.food_mart.modules.staff.domain.StaffRole;
 import com.example.food_mart.modules.warehouse.application.StackingService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -21,6 +18,13 @@ public class InboundApiController {
 
     private final InboundService inboundService;
     private final StackingService stackingService;
+    
+    @Operation(summary = "특정 입고의 아이템 목록 조회")
+    @GetMapping("/{inboundId}/items")
+    public ApiResponse getInboundItems(@PathVariable Long inboundId) {
+        return ApiResponse.success(inboundService.getInboundItems(inboundId));
+    }
+
     /*
         입고 등록
      */

@@ -1,5 +1,7 @@
 package com.example.food_mart.modules.logistic.application;
 
+import com.example.food_mart.common.exception.Expected4xxException;
+import com.example.food_mart.modules.logistic.domain.dto.InboundItemResponse;
 import com.example.food_mart.modules.logistic.domain.entity.Inbound;
 import com.example.food_mart.modules.logistic.domain.entity.InboundItem;
 import com.example.food_mart.modules.logistic.domain.entity.InboundStackingStatus;
@@ -26,6 +28,15 @@ public class InboundService {
     private final InboundItemRepository inboundItemRepository;
     private final StaffRepository staffRepository;
     private final ItemRepository itemRepository;
+
+    public List<InboundItemResponse> getInboundItems(Long inboundId) {
+        if (!inboundRepository.existsById(inboundId)) {
+            throw new Expected4xxException("해당 입고는 존재하지 않습니다.");
+        }
+        return inboundItemRepository.findAllByInboundIdWithItem(inboundId).stream()
+                .map(InboundItemResponse::from)
+                .toList();
+    }
 
     @Transactional
     public Long registerInbound(Long staffId, String supplier, Map<Long,Long> itemAndCount) {
