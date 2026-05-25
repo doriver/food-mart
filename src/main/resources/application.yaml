@@ -4,6 +4,9 @@ file:
 spring:
   application:
     name: food-mart
+  batch:
+    job:
+      enabled: false
   servlet:
     multipart:
       max-file-size: 10MB

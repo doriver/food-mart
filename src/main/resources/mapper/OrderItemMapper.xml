@@ -15,4 +15,16 @@
         GROUP BY oi.item_id
     </select>
 
+
+    <select id="sumDailyCountByItemId" resultType="DailySalesRow">
+        SELECT oi.item_id AS itemId, oi.name AS itemName, SUM(oi.count) AS salesCount
+        FROM order_item oi
+        JOIN `order` o ON o.id = oi.order_id
+        WHERE oi.created_at >= #{from}
+          AND oi.created_at &lt; #{to}
+          AND o.status IN ('DELIVERY', 'COMPLETE')
+        GROUP BY oi.item_id
+        ORDER BY salesCount DESC
+    </select>
+
 </mapper>

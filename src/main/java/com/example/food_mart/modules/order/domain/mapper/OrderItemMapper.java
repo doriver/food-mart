@@ -11,4 +11,7 @@ public interface OrderItemMapper {
 
     List<WeeklySalesRow> sumWeeklyCountByItemId(@Param("since") LocalDateTime since,
                                                 @Param("statuses") List<String> statuses);
+
+    List<DailySalesRow> sumDailyCountByItemId(@Param("from") LocalDateTime from,
+                                              @Param("to") LocalDateTime to);
 }
