@@ -1,4 +1,4 @@
-# 이커머스 물류
+# 물류 이커머스
 * '입고 ~ 재고 ~ 주문 ~ 출고' 전반을 다룬다. 
 * 기술스택 : SpringBoot, MySQL
 * 외부 연동없이, DB안에서 모든 흐름이 닫히도록 설계
@@ -6,14 +6,11 @@
 해당 README는 작성중(미완성)입니다.
 
 <details>
-<summary><h3>소프트웨어 아키텍처</h3></summary>
+<summary><h2>소프트웨어 아키텍처</h2></summary>
 
 <img width="300" height="300" alt="image" src="img/architech.png" />
 
-</details>
-
-<details>
-<summary><h3>Rest API 응답 설계</h3></summary>
+<h3>Rest API 응답 설계</h3>
 
 'HTTP 상태코드' 에 따른 응답
 * 2xx은 @controller에서
@@ -21,17 +18,17 @@
   * 커스텀한 Expected4xxException, Expected5xxException를 api로직에서 throw함
 * 응답형식은 ApiResponse클래스로 일괄 처리
   * 정적 팩토리 메서드(Static Factory Method)패턴을 사용
-</details>
 
-<details>
-<summary><h3>DB 관련 정책</h3></summary>
+<h3>DB 관련 정책</h3>
 
 (예외상황 있을수 있음)
 * FK 사용x , 참조필드에 index를 사용한다.
 * JPA를 기본으로 하되    
   동적쿼리, 복잡한 쿼리등은 MyBatis를 이용한다.
 * JPA 연관관계는 @ManyToOne(fetch = FetchType.LAZY) 만 사용한다.
+
 </details>
+
 
 
 ## 🎥 주요 기능들
@@ -186,4 +183,37 @@
       </li>
     </ol>
   </div>
+</details>
+
+## 📄 세부 기능들
+<details>
+  <summary>재고 개수 변화</summary>
+  <div>
+    <ul>
+      <li> 입고된 물건 적재후, 증가
+      </li>
+      <li> 주문 결제후 배송대기 상태로에서, 감소
+      </li>
+    </ul>
+    수정하려는 재고를 PK로 for update조회해서 Record X-Lock을 획득후 개수 변경
+  </div>
+  <img width="400" src="img/PESSIMISTIC_WRITE.png" />
+</details>
+<details>
+  <summary>상품들 일별 판매량 스냅샷</summary>
+  <div>
+    <ul>
+      <li> batch프레임워크 사용
+      </li>
+      <img width="400" src="img/itemSalesCountBatch.png" />
+      <li> 스냅샷 데이터(해당 아이템, 판매개수, 날짜) 조회
+      </li>
+      <img width="400" src="img/sumDailyCountByItemId.png" />
+    </ul>
+  </div>
+</details>
+<details>
+  <summary>출고 지연 탐지</summary>
+  : 주문 결제후 48시간이 지났는데, 출고가 완료되지 않은 주문들 조회
+  <img width="400" src="img/findOutboundDelays.png" />
 </details>

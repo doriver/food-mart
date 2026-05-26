@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(indexes = {
         @Index(name = "idx_user", columnList = "user_id"),
-        @Index(name = "idx_status_created_at", columnList = "status, created_at") // 출고 지연 탐지에서 추가
+        @Index(name = "idx_status_updated_at", columnList = "status, updated_at") // 출고 지연 탐지에서 추가
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -24,7 +24,6 @@
           AND oi.created_at &lt; #{to}
           AND o.status IN ('DELIVERY', 'COMPLETE')
         GROUP BY oi.item_id
-        ORDER BY salesCount DESC
     </select>
 
 </mapper>

@@ -5,19 +5,19 @@
 
     <select id="findOutboundDelays" resultType="OutboundDelayRow">
         SELECT o.id                                             AS orderId,
-               o.created_at                                     AS orderedAt,
+               o.updated_at                                     AS orderedAt,
                u.nickname                                       AS customer,
                d.delivery_company                               AS deliveryCompany,
                ob.outbound_status                               AS outboundStatus,
-               TIMESTAMPDIFF(HOUR, o.created_at, NOW())         AS hoursElapsed
+               TIMESTAMPDIFF(HOUR, o.updated_at, NOW())         AS hoursElapsed
         FROM `order` o
                  JOIN users u     ON u.id = o.user_id
                  JOIN delivery d  ON d.order_id = o.id
                  JOIN outbound ob ON ob.delivery_id = d.id
         WHERE o.status = 'WAITDELIVERY'
-          AND o.created_at &lt; DATE_SUB(NOW(), INTERVAL 2 DAY)
+          AND o.updated_at &lt; DATE_SUB(NOW(), INTERVAL 2 DAY)
           AND ob.outbound_status != 'COMPLETED'
-        ORDER BY o.created_at ASC
+        ORDER BY o.updated_at ASC
     </select>
 
 </mapper>
