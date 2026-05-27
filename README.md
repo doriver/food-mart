@@ -197,7 +197,7 @@
     </ul>
     수정하려는 재고를 PK로 for update조회해서 Record X-Lock을 획득후 개수 변경
   </div>
-  <img width="400" src="img/PESSIMISTIC_WRITE.png" />
+  <img width="500" src="img/PESSIMISTIC_WRITE.png" />
 </details>
 <details>
   <summary>상품들 일별 판매량 스냅샷</summary>
@@ -205,15 +205,15 @@
     <ul>
       <li> batch프레임워크 사용
       </li>
-      <img width="400" src="img/itemSalesCountBatch.png" />
+      <img width="500" src="img/itemSalesCountBatch.png" />
       <li> 스냅샷 데이터(해당 아이템, 판매개수, 날짜) 조회
       </li>
-      <img width="400" src="img/sumDailyCountByItemId.png" />
+      <img width="500" src="img/sumDailyCountByItemId.png" />
     </ul>
   </div>
 </details>
 <details>
   <summary>출고 지연 탐지</summary>
   : 주문 결제후 48시간이 지났는데, 출고가 완료되지 않은 주문들 조회
-  <img width="400" src="img/findOutboundDelays.png" />
+  <img width="500" src="img/findOutboundDelays.png" />
 </details>

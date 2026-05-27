@@ -59,17 +59,13 @@ public class TransactionService {
         주문 결제
         1.돈 결제    2.Stock 배송 대기상태
      */
-    @Transactional
+    // 일부러 @Transactional 제거, 각 세부 메서드에 걸려있음
     public void money(Long userId, Cart cart, Order order) {
         // 구매자 돈 차감 , 마트 장부에 입금 처리
-        ledgerPaymentService.moneyTransaction(userId, cart.getTotalPrice());
+        ledgerPaymentService.moneyTransaction(userId, cart.getTotalPrice(), order);
 
         // 창고에 있는 재고, 배송대기 상태로
-        stockService.stockToOutPrepare(cart.getItemAndCountMap(), order.getId());
-
-        // 주문 상태 업데이트
-        order.updateStatus(OrderStatus.WAITDELIVERY);
-        orderRepository.save(order);
+        stockService.stockToOutPrepare(cart.getItemAndCountMap(), order);
     }
 
     /*

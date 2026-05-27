@@ -3,6 +3,7 @@ package com.example.food_mart.modules.warehouse.application;
 import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
 import com.example.food_mart.common.exception.Expected5xxException;
+import com.example.food_mart.modules.order.domain.entity.OrderStatus;
 import com.example.food_mart.modules.shop.domain.entity.Item;
 import com.example.food_mart.modules.shop.domain.entity.ItemStorage;
 import com.example.food_mart.modules.shop.domain.repository.ItemRepository;
@@ -68,11 +69,11 @@ public class StockService {
 
     // 창고에 있는 재고, 배송대기 상태로
     @Transactional
-    public void stockToOutPrepare(Map<Long, Integer> itemAndCount, Long orderId) {
+    public void stockToOutPrepare(Map<Long, Integer> itemAndCount, Order order) {
         List<Stock> changedStockList = new ArrayList<>();
         List<Picking> pickingList = new ArrayList<>();
 
-        Order orderRef = orderRepository.getReferenceById(orderId);
+        Order orderRef = orderRepository.getReferenceById(order.getId());
         Staff staffRef = staffRepository.getReferenceById(StaffConstants.pickingMaster);
 
         for (Long itemId : itemAndCount.keySet()) {
@@ -104,9 +105,14 @@ public class StockService {
                 }
             }
         }
+
+        // 주문 상태 업데이트
+        order.updateStatus(OrderStatus.WAITDELIVERY);
+        
         try {
             stockRepository.saveAll(changedStockList);
             pickingRepository.saveAll(pickingList);
+            orderRepository.save(order);
         } catch (Exception e) {
             throw new Expected5xxException("주문하신 상품의 배송대기가 실패했습니다.");
         }

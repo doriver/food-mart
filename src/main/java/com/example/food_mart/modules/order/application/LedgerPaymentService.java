@@ -3,6 +3,9 @@ package com.example.food_mart.modules.order.application;
 import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
 import com.example.food_mart.modules.order.application.inteface.PaymentService;
+import com.example.food_mart.modules.order.domain.entity.Order;
+import com.example.food_mart.modules.order.domain.entity.OrderStatus;
+import com.example.food_mart.modules.order.domain.repository.OrderRepository;
 import com.example.food_mart.modules.shop.domain.entity.ShopLedgerHistory;
 import com.example.food_mart.modules.shop.domain.entity.ShopTransaction;
 import com.example.food_mart.modules.shop.domain.repository.ShopLedgerHistoryRepository;
@@ -20,6 +23,7 @@ public class LedgerPaymentService implements PaymentService {
 
     private final WalletRepository walletRepository;
     private final ShopLedgerHistoryRepository shopLedgerHistoryRepository;
+    private final OrderRepository orderRepository;
 
     /*
         구매자 돈 차감 , 마트 장부에 입금 처리
@@ -28,7 +32,7 @@ public class LedgerPaymentService implements PaymentService {
      */
     @Transactional
     @Override
-    public void moneyTransaction(Long userId, Long totalPrice) {
+    public void moneyTransaction(Long userId, Long totalPrice, Order order) {
 
         Wallet wallet = walletRepository.findByUserId(userId)
                 .orElseThrow(() -> new Expected4xxException(ErrorCode.WALLET_NOT_FOUND));
@@ -36,9 +40,13 @@ public class LedgerPaymentService implements PaymentService {
 
         ShopLedgerHistory shopLedgerHistory = new ShopLedgerHistory(wallet, ShopTransaction.PAY, totalPrice, LocalDateTime.now());
 
+        // 주문 상태 업데이트
+        order.updateStatus(OrderStatus.PAID);
+
         try {
             walletRepository.save(wallet);
             shopLedgerHistoryRepository.save(shopLedgerHistory);
+            orderRepository.save(order);
         } catch (Exception e) {
             throw new Expected4xxException(ErrorCode.FAIL_TRANSACTION);
         }
