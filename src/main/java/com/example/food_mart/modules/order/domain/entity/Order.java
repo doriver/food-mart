@@ -1,5 +1,7 @@
 package com.example.food_mart.modules.order.domain.entity;
 
+import com.example.food_mart.common.exception.ErrorCode;
+import com.example.food_mart.common.exception.Expected4xxException;
 import com.example.food_mart.modules.user.domain.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -49,7 +51,10 @@ public class Order {
         this.status = status;
     }
 
-    public void updateStatus(OrderStatus status) {
-        this.status = status;
+    public void updateStatus(OrderStatus newStatus) {
+        if (!this.status.canTransitionTo(newStatus)) {
+            throw new Expected4xxException(ErrorCode.INVALID_STATUS_TRANSITION);
+        }
+        this.status = newStatus;
     }
 }

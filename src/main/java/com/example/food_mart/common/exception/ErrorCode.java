@@ -21,6 +21,7 @@ public enum ErrorCode {
     , NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, "해당 주문은 존재하지 않습니다.")
     , NOT_CANCELLABLE_STATUS(HttpStatus.BAD_REQUEST, "현재 주문 상태에서는 취소할 수 없습니다.")
     , ALREADY_CANCELLED(HttpStatus.BAD_REQUEST, "이미 취소된 주문입니다.")
+    , INVALID_STATUS_TRANSITION(HttpStatus.BAD_REQUEST, "현재 상태에서 해당 상태로 변경할 수 없습니다.")
 
     // 주문 아이템
     , NOT_FOUND_ORDERITEM(HttpStatus.INTERNAL_SERVER_ERROR, "주문아이템을 찾을수 없습니다.")
