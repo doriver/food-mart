@@ -8,6 +8,11 @@ import com.example.food_mart.modules.logistic.domain.entity.Outbound;
 import com.example.food_mart.modules.logistic.domain.entity.OutboundStatus;
 import com.example.food_mart.modules.logistic.domain.repository.DeliveryRepository;
 import com.example.food_mart.modules.logistic.domain.repository.OutboundRepository;
+import com.example.food_mart.modules.order.domain.entity.Order;
+import com.example.food_mart.modules.order.domain.entity.OrderHistory;
+import com.example.food_mart.modules.order.domain.entity.OrderStatus;
+import com.example.food_mart.modules.order.domain.repository.OrderHistoryRepository;
+import com.example.food_mart.modules.order.domain.repository.OrderRepository;
 import com.example.food_mart.modules.staff.domain.Staff;
 import com.example.food_mart.modules.staff.domain.StaffRepository;
 import com.example.food_mart.modules.warehouse.domain.entity.Picking;
@@ -27,6 +32,8 @@ public class OutboundService {
     private final OutboundRepository outboundRepository;
     private final PickingRepository pickingRepository;
     private final StaffRepository staffRepository;
+    private final OrderRepository orderRepository;
+    private final OrderHistoryRepository orderHistoryRepository;
 
     @Transactional
     public Long registerOutbound(Long orderId, String address, DeliveryCompany deliveryCompany, String trackingCode, Long staffId) {
@@ -55,6 +62,18 @@ public class OutboundService {
         }
 
         outbound.completeBy(staffRepository.getReferenceById(staffId));
+
+        // 주문 상태 DELIVERY로 변경 및 이력 기록
+        Delivery delivery = deliveryRepository.findById(outbound.getDeliveryId())
+                .orElseThrow(() -> new Expected4xxException(ErrorCode.NOT_FOUND_DELIVERY));
+        Order order = orderRepository.findById(delivery.getOrderId())
+                .orElseThrow(() -> new Expected4xxException(ErrorCode.NOT_FOUND_ORDER));
+
+        OrderStatus previousStatus = order.getStatus();
+        order.updateStatus(OrderStatus.DELIVERY);
+        orderRepository.save(order);
+        orderHistoryRepository.save(new OrderHistory(order, previousStatus, OrderStatus.DELIVERY, null));
+
         return outbound.getId();
     }
 

@@ -119,9 +119,11 @@
       </li>
       <li> Wallet에서 돈 차감, ShopLedgerHistory (입금)생성    
       </li>
-      <li> Order 상태 업데이트
+      <li> Order상태 업데이트, OrderHistory 저장
       </li>
       <li> Stock에서 개수 차감,  Picking 생성
+      </li>
+      <li> Order상태 업데이트, OrderHistory 저장
       </li>
     </ol>
   </div>
@@ -181,6 +183,8 @@
       </li>
       <li> Outbound 상태와 담당직원 업데이트
       </li>
+      <li> Order상태 업데이트, OrderHistory 저장
+      </li>
     </ol>
   </div>
 </details>
@@ -198,6 +202,19 @@
     수정하려는 재고를 PK로 for update조회해서 Record X-Lock을 획득후 개수 변경
   </div>
   <img width="500" src="img/PESSIMISTIC_WRITE.png" />
+</details>
+<details>
+  <summary>주문 상태 관리</summary>
+  <div>
+    <ul>
+      <li> 주문 상태 변경 제한 - 상태 enum에서 다음 상태가능한거 정의, order엔티티 상태업데이트 메소드에 해당 로직 적용
+      </li>
+      <img width="500" src="img/OrderStatus.png" />
+      <li> 주문상태 변경이력 기록 - 주문상태 변경하면서, 같이 해당 OrderHistory(이전상태, 이후상태, 등등)을 저장한다
+      </li>
+      <img width="500" src="img/OrderHistory.png" />
+    </ul>
+  </div>
 </details>
 <details>
   <summary>상품들 일별 판매량 스냅샷</summary>

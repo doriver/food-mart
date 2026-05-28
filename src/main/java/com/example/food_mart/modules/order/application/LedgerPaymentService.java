@@ -4,7 +4,9 @@ import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
 import com.example.food_mart.modules.order.application.inteface.PaymentService;
 import com.example.food_mart.modules.order.domain.entity.Order;
+import com.example.food_mart.modules.order.domain.entity.OrderHistory;
 import com.example.food_mart.modules.order.domain.entity.OrderStatus;
+import com.example.food_mart.modules.order.domain.repository.OrderHistoryRepository;
 import com.example.food_mart.modules.order.domain.repository.OrderRepository;
 import com.example.food_mart.modules.shop.domain.entity.ShopLedgerHistory;
 import com.example.food_mart.modules.shop.domain.entity.ShopTransaction;
@@ -24,6 +26,7 @@ public class LedgerPaymentService implements PaymentService {
     private final WalletRepository walletRepository;
     private final ShopLedgerHistoryRepository shopLedgerHistoryRepository;
     private final OrderRepository orderRepository;
+    private final OrderHistoryRepository orderHistoryRepository;
 
     /*
         구매자 돈 차감 , 마트 장부에 입금 처리
@@ -41,12 +44,16 @@ public class LedgerPaymentService implements PaymentService {
         ShopLedgerHistory shopLedgerHistory = new ShopLedgerHistory(wallet, ShopTransaction.PAY, totalPrice, LocalDateTime.now());
 
         // 주문 상태 업데이트
+        OrderStatus previousStatus = order.getStatus();
         order.updateStatus(OrderStatus.PAID);
+
+        OrderHistory orderHistory = new OrderHistory(order, previousStatus, OrderStatus.PAID, null);
 
         try {
             walletRepository.save(wallet);
             shopLedgerHistoryRepository.save(shopLedgerHistory);
             orderRepository.save(order);
+            orderHistoryRepository.save(orderHistory);
         } catch (Exception e) {
             throw new Expected4xxException(ErrorCode.FAIL_TRANSACTION);
         }
