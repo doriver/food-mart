@@ -3,6 +3,7 @@ package com.example.food_mart.modules.order.application;
 import com.example.food_mart.common.argumentResolver.UserInfo;
 import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
+import com.example.food_mart.modules.logistic.application.OutboundService;
 import com.example.food_mart.modules.order.domain.entity.Order;
 import com.example.food_mart.modules.order.domain.entity.OrderStatus;
 import com.example.food_mart.modules.order.domain.repository.OrderRepository;
@@ -10,6 +11,7 @@ import com.example.food_mart.modules.order.presentation.dto.request.OrderCreateD
 import com.example.food_mart.modules.shop.application.CartService;
 import com.example.food_mart.modules.shop.domain.Cart;
 import com.example.food_mart.modules.user.application.WalletReadService;
+import com.example.food_mart.modules.warehouse.application.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,8 @@ public class OrderService {
     private final CartService cartService;
     private final TransactionService transactionService;
     private final OrderRepository orderRepository;
+    private final StockService stockService;
+    private final OutboundService outboundService;
 
     /*
         주문 절차
@@ -87,7 +91,8 @@ public class OrderService {
         }
         if (order.getStatus() != OrderStatus.REGISTER
                 && order.getStatus() != OrderStatus.PAID
-                && order.getStatus() != OrderStatus.WAITDELIVERY) {
+                && order.getStatus() != OrderStatus.WAITDELIVERY
+                && order.getStatus() != OrderStatus.CANCELLING) {
             throw new Expected4xxException(ErrorCode.NOT_CANCELLABLE_STATUS);
         }
 
@@ -96,10 +101,15 @@ public class OrderService {
             orderCoreService.updateOrderStatus(order, OrderStatus.CANCEL, reason);
         } else if (order.getStatus() == OrderStatus.PAID) { // 환불
             transactionService.cancelPaid(order, reason);
-        } else if (order.getStatus() == OrderStatus.WAITDELIVERY) { // 배송대기 취소(출고취소, 재고복원) + 환불
-            transactionService.cancelWaitDelivery(order); // 멱등성
+        } else if (order.getStatus() == OrderStatus.WAITDELIVERY || order.getStatus() == OrderStatus.CANCELLING) { // 배송대기 취소(출고취소, 재고복원) + 환불
+            // 출고취소
+            outboundService.cancelOutboundIfExists(order.getId()); // 멱등성
+            // 재고복원
+            if (order.getStatus() != OrderStatus.CANCELLING) {
+                stockService.restoreStockFromPickings(order); // pessimistic lock 포함 -> 트랜잭션 분리함
+            }
+            // 환불
             transactionService.cancelPaid(order, reason);
         }
-
     }
 }

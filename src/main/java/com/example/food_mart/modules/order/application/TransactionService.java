@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -59,14 +60,5 @@ public class TransactionService {
                 .mapToLong(OrderItem::getTotalPrice)
                 .sum();
         ledgerPaymentService.refundTransaction(order.getUserId(), totalRefund);
-    }
-
-    /*
-        배송대기 취소 : 출고취소 + 재고복원
-        @Transactional 제거: 재고 pessimistic lock 보유 시간 최소화
-     */
-    public void cancelWaitDelivery(Order order) {
-        outboundService.cancelOutboundIfExists(order.getId()); // 멱등성
-        stockService.restoreStockFromPickings(order.getId()); // 멱등성 , pessimistic lock
     }
 }

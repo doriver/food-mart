@@ -3,6 +3,7 @@ package com.example.food_mart.modules.warehouse.application;
 import com.example.food_mart.common.exception.ErrorCode;
 import com.example.food_mart.common.exception.Expected4xxException;
 import com.example.food_mart.common.exception.Expected5xxException;
+import com.example.food_mart.modules.order.application.OrderCoreService;
 import com.example.food_mart.modules.order.domain.entity.OrderHistory;
 import com.example.food_mart.modules.order.domain.entity.OrderStatus;
 import com.example.food_mart.modules.order.domain.repository.OrderHistoryRepository;
@@ -36,6 +37,7 @@ public class StockService {
     private final PickingRepository pickingRepository;
     private final StockRepository stockRepository;
     private final OrderHistoryRepository orderHistoryRepository;
+    private final OrderCoreService orderCoreService;
 
     // 재고 등록
     public Long registerStock(Long count, WarehousePurpose locationType, Long itemId, Long warehouseId) {
@@ -132,8 +134,8 @@ public class StockService {
        - picking없으면 stock복원도 없음
      */
     @Transactional
-    public void restoreStockFromPickings(Long orderId) {
-        List<Picking> pickingList = pickingRepository.findAllByOrderId(orderId);
+    public void restoreStockFromPickings(Order order) {
+        List<Picking> pickingList = pickingRepository.findAllByOrderId(order.getId());
 
         List<Stock> changedStockList = new ArrayList<>();
         for (Picking picking : pickingList) {
@@ -146,6 +148,7 @@ public class StockService {
         try {
             stockRepository.saveAll(changedStockList);
             pickingRepository.deleteAll(pickingList);
+            orderCoreService.updateOrderStatus(order, OrderStatus.CANCELLING, "재고복원까지함, 다음 환불 필요");
         } catch (Exception e) {
             throw new Expected5xxException("주문 취소에 따른 재고 복원에 실패했습니다.");
         }
