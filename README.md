@@ -216,6 +216,7 @@
     </ul>
   </div>
 </details>
+
 <details>
   <summary>상품들 일별 판매량 스냅샷</summary>
   <div>
@@ -229,6 +230,20 @@
     </ul>
   </div>
 </details>
+
+<details>
+  <summary>주문 진행 상태 추적 (주문 → 피킹 → 출고 → 배송)</summary>
+  <ul>
+      <li> 주문상태, 피킹 진행도, 출고상태, 배송관련(추가 개발 필요) 등을 조회
+      </li>
+      <li> 연속된 LEFT JOIN 이나, orderId 1개로 무리x
+      </li>
+      <li> 집계 서브쿼리가 있으나, 해당 쿼리가 읽는 row 개수가 많지 않아 무리x
+      </li>
+      <img width="500" src="img/findOrderFlow.png" />
+  </ul>
+</details>
+
 <details>
   <summary>출고 지연 탐지</summary>
   : 주문 결제후 48시간이 지났는데, 출고가 완료되지 않은 주문들 조회

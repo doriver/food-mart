@@ -4,18 +4,20 @@
 <mapper namespace="com.example.food_mart.modules.order.domain.mapper.OrderFlowMapper">
 
     <select id="findOrderFlow" resultType="OrderFlowRow">
-        SELECT o.id                                                                  AS orderId,
-               o.status                                                              AS orderStatus,
-               p.total_picking                                                       AS totalPicking,
-               p.completed_picking                                                   AS completedPicking,
-               ob.outbound_status                                                    AS outboundStatus,
-               d.delivery_company                                                    AS deliveryCompany,
-               d.tracking_code                                                       AS trackingCode
+        SELECT o.id                                                             AS orderId,
+               o.status                                                         AS orderStatus,
+               p.total_picking                                                  AS totalPicking,
+               p.completed_picking                                              AS completedPicking,
+               ob.outbound_status                                               AS outboundStatus,
+               d.delivery_company                                               AS deliveryCompany,
+               d.tracking_code                                                  AS trackingCode
         FROM `order` o
                  LEFT JOIN (SELECT order_id,
-                                   COUNT(*)                                                           AS total_picking,
-                                   SUM(CASE WHEN picking_status = 'COMPLETED' THEN 1 ELSE 0 END) AS completed_picking
+                                   COUNT(*)                                     AS total_picking,
+                                   SUM(CASE WHEN picking_status = 'COMPLETED' THEN 1 ELSE 0 END)
+                                                                                AS completed_picking
                             FROM picking
+                            WHERE order_id = #{orderId}
                             GROUP BY order_id) p ON p.order_id = o.id
                  LEFT JOIN delivery d ON d.order_id = o.id
                  LEFT JOIN outbound ob ON ob.delivery_id = d.id
