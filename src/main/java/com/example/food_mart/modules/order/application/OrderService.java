@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OrderService {
 
+    private final OrderCoreService orderCoreService;
     private final WalletReadService walletReadService;
     private final CartService cartService;
     private final TransactionService transactionService;
@@ -40,7 +41,7 @@ public class OrderService {
         judgeBuyable(userInfo.getUserId(), cart);
 
         // 주문 생성
-        Order savedOrder = transactionService.order(userInfo.getUserId(), orderCreateDTO.getAddress(), cart);
+        Order savedOrder = orderCoreService.createOrder(userInfo.getUserId(), orderCreateDTO.getAddress(), cart);
 
         // 주문 결제
         transactionService.money(userInfo.getUserId(), cart, savedOrder);
@@ -85,11 +86,20 @@ public class OrderService {
             throw new Expected4xxException(ErrorCode.ALREADY_CANCELLED);
         }
         if (order.getStatus() != OrderStatus.REGISTER
+                && order.getStatus() != OrderStatus.PAID
                 && order.getStatus() != OrderStatus.WAITDELIVERY) {
             throw new Expected4xxException(ErrorCode.NOT_CANCELLABLE_STATUS);
         }
 
-        // 취소 처리
-        transactionService.cancelOrder(order, reason);
+        // 주문 취소
+        if (order.getStatus() == OrderStatus.REGISTER) { // 주문 상태 CANCEL 로
+            orderCoreService.updateOrderStatus(order, OrderStatus.CANCEL, reason);
+        } else if (order.getStatus() == OrderStatus.PAID) { // 환불
+            transactionService.cancelPaid(order, reason);
+        } else if (order.getStatus() == OrderStatus.WAITDELIVERY) { // 배송대기 취소(출고취소, 재고복원) + 환불
+            transactionService.cancelWaitDelivery(order); // 멱등성
+            transactionService.cancelPaid(order, reason);
+        }
+
     }
 }

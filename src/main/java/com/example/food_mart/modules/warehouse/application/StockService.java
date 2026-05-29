@@ -125,7 +125,12 @@ public class StockService {
         }
     }
 
-    // 주문 취소 시 재고 복원
+    /*
+       주문 취소 시 재고 복원
+       멱등성 구현되있음
+       - picking 레코드를 읽어서 stock복원 후 picking 삭제
+       - picking없으면 stock복원도 없음
+     */
     @Transactional
     public void restoreStockFromPickings(Long orderId) {
         List<Picking> pickingList = pickingRepository.findAllByOrderId(orderId);

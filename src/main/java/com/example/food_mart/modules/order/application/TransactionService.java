@@ -25,35 +25,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TransactionService {
 
-    private final OrderItemService orderItemService;
+    private final OrderCoreService orderCoreService;
     private final PaymentService ledgerPaymentService;
     private final StockService stockService;
     private final OutboundService outboundService;
-
-    private final UserRepository userRepository;
-    private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
-    private final OrderHistoryRepository orderHistoryRepository;
-
-
-    @Transactional
-    public Order order(Long userId, String deliveryAddress, Cart cart) {
-        // Order생성
-        User user = userRepository.getReferenceById(userId);
-        Order order = new Order(user, deliveryAddress, OrderStatus.REGISTER);
-
-        Order savedOrder = null;
-        try {
-            savedOrder = orderRepository.save(order);
-        } catch (Exception e) {
-            throw new Expected5xxException(ErrorCode.FAIL_ORDER);
-        }
-
-        // OrderItem들 저장
-        orderItemService.saveOrderItem(savedOrder.getId(), cart.getItemsInCart());
-
-        return savedOrder;
-    }
 
     /*
         주문 결제
@@ -69,40 +45,28 @@ public class TransactionService {
     }
 
     /*
-        주문 취소 처리
-        1. WAITDELIVERY 상태인 경우: 출고취소 + 환불 + 재고복원
-        2. 주문 상태 CANCEL로 변경
-        3. 주문 이력 기록
+        주문취소_환불
      */
     @Transactional
-    public void cancelOrder(Order order, String reason) {
-        OrderStatus previousStatus = order.getStatus();
+    public void cancelPaid(Order order, String reason) {
+        refund(order);
+        orderCoreService.updateOrderStatus(order, OrderStatus.CANCEL, reason);
+    }
 
-        // 결제 완료 상태인 경우에만 환불 및 재고 복원
-        if (previousStatus == OrderStatus.WAITDELIVERY) {
-            // 출고 취소
-            outboundService.cancelOutboundIfExists(order.getId());
+    public void refund(Order order) {
+        List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
+        long totalRefund = orderItems.stream()
+                .mapToLong(OrderItem::getTotalPrice)
+                .sum();
+        ledgerPaymentService.refundTransaction(order.getUserId(), totalRefund);
+    }
 
-            // 환불 금액 계산
-            List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
-            long totalRefund = orderItems.stream()
-                    .mapToLong(OrderItem::getTotalPrice)
-                    .sum();
-
-            // 환불 처리
-            ledgerPaymentService.refundTransaction(order.getUserId(), totalRefund);
-
-            // 재고 복원
-            stockService.restoreStockFromPickings(order.getId());
-        }
-
-        // 주문 상태 변경
-        order.updateStatus(OrderStatus.CANCEL);
-        orderRepository.save(order);
-
-        // 주문 이력 기록
-        OrderHistory orderHistory = new OrderHistory(
-                order, previousStatus, OrderStatus.CANCEL, reason);
-        orderHistoryRepository.save(orderHistory);
+    /*
+        배송대기 취소 : 출고취소 + 재고복원
+        @Transactional 제거: 재고 pessimistic lock 보유 시간 최소화
+     */
+    public void cancelWaitDelivery(Order order) {
+        outboundService.cancelOutboundIfExists(order.getId()); // 멱등성
+        stockService.restoreStockFromPickings(order.getId()); // 멱등성 , pessimistic lock
     }
 }
