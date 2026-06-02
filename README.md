@@ -6,7 +6,7 @@
 해당 README는 작성중(미완성)입니다.
 
 <details>
-<summary><h2>소프트웨어 아키텍처</h2></summary>
+<summary><h2> ✅ 소프트웨어 아키텍처</h2></summary>
 
 <img width="300" height="300" alt="image" src="img/architech.png" />
 
@@ -27,42 +27,81 @@
   동적쿼리, 복잡한 쿼리등은 MyBatis를 이용한다.
 * JPA 연관관계는 @ManyToOne(fetch = FetchType.LAZY) 만 사용한다.
 
+<h3>프레임워크(SpringBoot) 핸들링</h3>
+<details>
+  <summary>데이터 유효성 검사</summary>
+  <ul>
+      <li> DTO에 검증 조건(어노테이션) 추가
+      </li>
+      <li> Controller에서 @Valid 사용 <br>
+            →  검증 실패 시 자동으로 MethodArgumentNotValidException 이 발생
+      </li>
+      <li> 검증 실패(에러) 응답 처리
+        <ul>
+          <li> @ExceptionHandler(MethodArgumentNotValidException.class) 에서 처리
+          </li>
+          <li> Exception → BindingResult  → FieldError  →  getField() , getDefaultMessage() , getRejectedValue()
+          </li>
+          <li> 데이터가 어떤식으로 잘못됐는지, 사용자에게 알린다.
+          </li>
+        </ul>
+      </li>
+      
+  </ul>
 </details>
+<details>
+  <summary>Controller 매개변수 커스텀</summary>
+  <ul>
+      <li> HandlerMethodArgumentResolver를 구현해, 매개변수로 넘겨줄 클래스를 커스텀한다.
+      </li>
+      <li> WebMvcConfigurer를 구현한 config클래스에서, 위에서 구현한 클래스를 addArgumentResolvers 해준다.
+      </li>
+  </ul>
+</details>
+<details>
+  <summary>다른것도 추가 예정</summary>
+  <ul>
+      <li> 
+      </li>
+  </ul>
+</details>
+
+</details>
+</details>
+
 
 
 
 ## 🎥 주요 기능들
-
-### 입고
-
-<details>
-  <summary>프로세스</summary>
-  <div>
-    <ol>
-      <li> (외부에서 물건 도착한 상황)
-      </li>
-      <li> 물건 받은 직원이 입고 등록 신청   
-      </li>
-      <li> 입고, 입고 아이템 생성
-      </li>
-      <li> (적재 담당자가 창고에 적재 예정)
-      </li>
-    </ol>
-  </div>
-</details>
-<details>
-  <summary>최종 데이터 변화</summary>
-  <div>
-    <ol>
-      <li> Inbound, InboundItem 생성
-      </li>
-    </ol>
-  </div>
-</details>
-
-#### 입고된 물건 적재
-
-<details>
+<div style="display: flex;">
+<div style="flex: 1;">
+  <h3>입고</h3>
+  <details>
+    <summary>프로세스</summary>
+    <div>
+      <ol>
+        <li> (외부에서 물건 도착한 상황)
+        </li>
+        <li> 물건 받은 직원이 입고 등록 신청   
+        </li>
+        <li> 입고, 입고 아이템 생성
+        </li>
+        <li> (적재 담당자가 창고에 적재 예정)
+        </li>
+      </ol>
+    </div>
+  </details>
+  <details>
+    <summary>최종 데이터 변화</summary>
+    <div>
+      <ol>
+        <li> Inbound, InboundItem 생성
+        </li>
+      </ol>
+    </div>
+  </details>
+  <h4>입고된 물건 적재</h4>
+  <details>
   <summary>프로세스</summary>
   <div>
     <ol>
@@ -76,21 +115,53 @@
       </li>
     </ol>
   </div>
-</details>
-<details>
-  <summary>최종 데이터 변화</summary>
+  </details>
+  <details>
+    <summary>최종 데이터 변화</summary>
+    <div>
+      <ol>
+        <li> Stock 생성 or 개수 증가
+        </li>
+        <li> InboundItem 적재 상태, 적재한 직원 업데이트
+        </li>
+      </ol>
+    </div>
+  </details>
+  <h3>출고</h3>
+  <details>
+  <summary>프로세스</summary>
   <div>
     <ol>
-      <li> Stock 생성 or 개수 증가
+      <li> (직원이 출고처리 하는 장소에서, 주문에 해당하는 상품들이 다 있는지 확인)
       </li>
-      <li> InboundItem 적재 상태, 적재한 직원 업데이트
+      <li> 주문의 도착지, 배송회사 등등 입력해서 출고등록 요청
+      </li>
+      <li> (출고 등록 완료됨) 
+      </li>
+      <li> 배송 회사가 물건 가지고가는거 확인하고, 출고 완료요청
       </li>
     </ol>
   </div>
-</details>
-
-### 주문 (결제까지 하는경우)
-<details>
+  </details>
+  <details>
+    <summary>최종 데이터 변화</summary>
+    <div>
+      <ol>
+        <li> Delivery 생성
+        </li>
+        <li> Outbound 생성
+        </li>
+        <li> Outbound 상태와 담당직원 업데이트
+        </li>
+        <li> Order상태 업데이트, OrderHistory 저장
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+<div style="flex: 1;">
+  <h3>주문 (결제까지 하는경우)</h3>
+  <details>
   <summary>프로세스</summary>
   <div>
     <ol>
@@ -108,32 +179,31 @@
       </li>
     </ol>
   </div>
-</details>
-<details>
-  <summary>최종 데이터 변화</summary>
-  <div>
-    <ol>
-      <li> Order, OrderItem 생성
-      </li>
-      <li> ItemInCart 삭제
-      </li>
-      <li> Wallet에서 돈 차감, ShopLedgerHistory (입금)생성    
-      </li>
-      <li> Order상태 업데이트, OrderHistory 저장
-      </li>
-      <li> Stock에서 개수 차감,  Picking 생성
-      </li>
-      <li> Order상태 업데이트, OrderHistory 저장
-      </li>
-    </ol>
-  </div>
-</details>
+  </details>
+  <details>
+    <summary>최종 데이터 변화</summary>
+    <div>
+      <ol>
+        <li> Order, OrderItem 생성
+        </li>
+        <li> ItemInCart 삭제
+        </li>
+        <li> Wallet에서 돈 차감, ShopLedgerHistory (입금)생성    
+        </li>
+        <li> Order상태 업데이트, OrderHistory 저장
+        </li>
+        <li> Stock에서 개수 차감,  Picking 생성
+        </li>
+        <li> Order상태 업데이트, OrderHistory 저장
+        </li>
+      </ol>
+    </div>
+  </details>
 
 주문기능 : [OrderService.java](https://github.com/doriver/food-mart/blob/47321633b10422cabf2a50dc6e70fb6e5a63da7b/src/main/java/com/example/food_mart/modules/order/application/OrderService.java#L27)
 
-#### 주문된 상품들 피킹
-
-<details>
+  <h4>주문된 상품들 피킹</h4>
+  <details>
   <summary>프로세스</summary>
   <div>
     <ol>
@@ -145,49 +215,19 @@
       </li>
     </ol>
   </div>
-</details>
-<details>
-  <summary>최종 데이터 변화</summary>
-  <div>
-    <ol>
-      <li> Picking 상태와 담당직원 업데이트
-      </li>
-    </ol>
-  </div>
-</details>
+  </details>
+  <details>
+    <summary>최종 데이터 변화</summary>
+    <div>
+      <ol>
+        <li> Picking 상태와 담당직원 업데이트
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+</div>
 
-### 출고
-
-<details>
-  <summary>프로세스</summary>
-  <div>
-    <ol>
-      <li> (직원이 출고처리 하는 장소에서, 주문에 해당하는 상품들이 다 있는지 확인)
-      </li>
-      <li> 주문의 도착지, 배송회사 등등 입력해서 출고등록 요청
-      </li>
-      <li> (출고 등록 완료됨) 
-      </li>
-      <li> 배송 회사가 물건 가지고가는거 확인하고, 출고 완료요청
-      </li>
-    </ol>
-  </div>
-</details>
-<details>
-  <summary>최종 데이터 변화</summary>
-  <div>
-    <ol>
-      <li> Delivery 생성
-      </li>
-      <li> Outbound 생성
-      </li>
-      <li> Outbound 상태와 담당직원 업데이트
-      </li>
-      <li> Order상태 업데이트, OrderHistory 저장
-      </li>
-    </ol>
-  </div>
-</details>
 
 ## 📄 세부 기능들
 <details>
