@@ -102,19 +102,71 @@
       </li>
       <li> ItemInCart 삭제
       </li>
-      <li> Wallet에서 돈 차감, ShopLedgerHistory (입금)생성    
+      <li> Wallet에서 돈 차감, ShopLedgerHistory (입금)생성 <br>
+          Order상태 업데이트, OrderHistory 저장
       </li>
-      <li> Order상태 업데이트, OrderHistory 저장
-      </li>
-      <li> Stock에서 개수 차감,  Picking 생성
-      </li>
-      <li> Order상태 업데이트, OrderHistory 저장
+      <li> Stock에서 개수 차감,  Picking 생성 <br>
+          Order상태 업데이트, OrderHistory 저장
       </li>
     </ol>
   </div>
 </details>
 
   주문기능 : [OrderService.java](https://github.com/doriver/food-mart/blob/47321633b10422cabf2a50dc6e70fb6e5a63da7b/src/main/java/com/example/food_mart/modules/order/application/OrderService.java#L27)
+
+#### 주문 취소
+<details>
+  <summary>특징</summary>
+  <ul>
+      <li>주문 상태가 REGISTER, PAID, WAITDELIVERY 일때만 취소가능
+      </li>
+      <li> WAITDELIVERY 의 경우 3개의 트랜잭션으로 처리(나머진 트랜잭션 1개로 처리됨)
+        <ol>
+          <li> 출고 존재하면 취소처리 - 멱등성으로 구현
+          </li>
+          <li> 재고 복원 - record X-Lock , 주문 상태값 cancelling
+          </li>
+          <li> 환불 - 주문 상태값 cancel
+          </li>
+        </ol>
+      </li>
+      <li>pessimistic lock 포함 -> 트랜잭션 분리 <br>
+          트랜잭션 분리에 따른 데이터 정합성 문제를 주문 상태값 CANCELLING 추가하여 해결
+      </li>
+  </ul>
+</details>
+<details>
+  <summary>최종 데이터 변화</summary>
+  <div>
+    <ul>
+      <li> REGISTER 인 경우
+        <ol>
+          <li> 주문상태 취소 - Order상태 업데이터 , OrderHistory 생성
+          </li>
+        </ol>
+      </li>
+      <li> PAID 인 경우
+        <ol>
+          <li> Wallet에 돈 증가, ShopLedgerHistory (환불)생성 <br>
+              주문상태 취소로
+          </li>
+        </ol>
+      </li>
+      <li> WAITDELIVERY 인 경우
+        <ol>
+          <li> Outbound (존재하면) 상태 업데이트
+          </li>
+          <li> Picking 업데이트 , Stock 증가 <br>
+              주문상태 Cancelling 으로
+          </li>
+          <li> Wallet에 돈 증가, ShopLedgerHistory (환불)생성 <br>
+              주문상태 취소로
+          </li>
+        </ol>
+      </li>
+    </ul>
+  </div>
+</details>
 
 #### 주문된 상품들 피킹
 <details>
@@ -235,6 +287,8 @@
       <li> 입고된 물건 적재후, 증가
       </li>
       <li> 주문 결제후 배송대기 상태로에서, 감소
+      </li>
+      <li> (배송 대기상태인) 주문 취소에서, 증가
       </li>
     </ul>
     수정하려는 재고를 PK로 for update조회해서 Record X-Lock을 획득후 개수 변경
